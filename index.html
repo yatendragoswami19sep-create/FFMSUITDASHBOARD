@@ -25,31 +25,71 @@
       --primary: #0284c7; 
       --emerald: #10b981; 
       --amber: #f59e0b; 
+      --rose: #f43f5e;
       --purple: #8b5cf6; 
-      --navy: #0f172a; 
-      --bg: #f8fafc; 
+      --navy: #0b1329; 
+      --bg: #f1f5f9; 
       --card: #ffffff; 
       --border: #e2e8f0; 
       --text: #0f172a; 
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
-    body { background: #cbd5e1; min-height: 100vh; display: flex; justify-content: center; align-items: flex-start; }
-    .app-screen { width: 100%; max-width: 440px; min-height: 100vh; background: var(--bg); display: flex; flex-direction: column; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
-    .top-navbar { background: var(--navy); color: white; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 50; }
-    .dashboard-body { padding: 14px 16px 40px 16px; flex: 1; overflow-y: auto; }
-    .section-card { background: var(--card); border-radius: 16px; padding: 14px; margin-bottom: 12px; border: 1.5px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
+    body { background: #94a3b8; min-height: 100vh; display: flex; justify-content: center; align-items: flex-start; }
+    .app-screen { width: 100%; max-width: 440px; min-height: 100vh; background: var(--bg); display: flex; flex-direction: column; position: relative; box-shadow: 0 15px 35px rgba(0,0,0,0.2); }
+    
+    /* VIBRANT MODERN NAVBAR */
+    .top-navbar { 
+      background: linear-gradient(135deg, #0b1329 0%, #1e1b4b 100%); 
+      color: white; 
+      padding: 14px 18px; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      position: sticky; 
+      top: 0; 
+      z-index: 50;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    }
+    
+    .dashboard-body { padding: 14px 16px 45px 16px; flex: 1; overflow-y: auto; }
+    .section-card { 
+      background: var(--card); 
+      border-radius: 18px; 
+      padding: 14px; 
+      margin-bottom: 14px; 
+      border: 1.5px solid var(--border); 
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03); 
+    }
     .card-head { font-size: 13.5px; font-weight: 800; color: var(--text); display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-    .clickable-box { cursor: pointer; transition: transform 0.15s ease; }
+    .clickable-box { cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease; }
     .clickable-box:active { transform: scale(0.97); }
+    
     .mr-filter-scroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px; scrollbar-width: none; }
-    .mr-pill-btn { padding: 8px 14px; border-radius: 20px; font-size: 11px; font-weight: 700; border: 1.5px solid var(--border); background: white; color: #64748b; cursor: pointer; white-space: nowrap; }
-    .mr-pill-btn.active { background: #0284c7; color: white; border-color: #0284c7; }
+    .mr-pill-btn { 
+      padding: 8px 16px; 
+      border-radius: 20px; 
+      font-size: 11.5px; 
+      font-weight: 700; 
+      border: 1.5px solid var(--border); 
+      background: white; 
+      color: #64748b; 
+      cursor: pointer; 
+      white-space: nowrap; 
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+    .mr-pill-btn.active { 
+      background: linear-gradient(135deg, #0284c7, #2563eb); 
+      color: white; 
+      border-color: #0284c7; 
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+    }
 
-    #pathway-map-container { width: 100%; height: 260px; border-radius: 12px; border: 1.5px solid #bae6fd; z-index: 1; }
+    #pathway-map-container { width: 100%; height: 280px; border-radius: 14px; border: 2px solid #bae6fd; z-index: 1; }
 
+    /* POPUP FLASH BANNER */
     #activity-flash-banner {
       position: fixed;
-      top: 60px;
+      top: 65px;
       left: 50%;
       transform: translateX(-50%) translateY(-140px);
       width: calc(100% - 32px);
@@ -57,14 +97,14 @@
       background: #0f172a;
       color: white;
       padding: 12px 14px;
-      border-radius: 12px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+      border-radius: 14px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
       z-index: 500;
       display: flex;
       align-items: center;
-      gap: 10px;
-      border-left: 4px solid #10b981;
-      transition: transform 0.3s ease;
+      gap: 12px;
+      border-left: 5px solid #10b981;
+      transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       cursor: pointer;
     }
     #activity-flash-banner.show {
@@ -73,16 +113,17 @@
 
     .notif-bell-btn {
       position: relative;
-      background: rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.15);
       border: none;
       color: white;
-      width: 34px;
-      height: 34px;
-      border-radius: 10px;
+      width: 36px;
+      height: 36px;
+      border-radius: 11px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
+      font-size: 15px;
     }
     .notif-badge {
       position: absolute;
@@ -93,59 +134,93 @@
       font-size: 9px;
       font-weight: 800;
       border-radius: 50%;
-      min-width: 16px;
-      height: 16px;
+      min-width: 17px;
+      height: 17px;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 0 3px;
-      border: 1.5px solid var(--navy);
+      border: 2px solid #0f172a;
+      animation: pulseAlert 2s infinite;
     }
 
-    /* SQUARE GREEN CARDS - MATCHING STAFF THEME */
+    @keyframes pulseAlert {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.15); }
+      100% { transform: scale(1); }
+    }
+
+    /* COLORFUL CALL CARDS */
     .owner-call-card-square { 
       background: #ffffff; 
-      border-radius: 14px; 
-      padding: 13px 14px; 
-      margin-bottom: 11px; 
+      border-radius: 16px; 
+      padding: 14px; 
+      margin-bottom: 12px; 
       border: 2px solid #10b981; 
-      box-shadow: 0 3px 10px rgba(16, 185, 129, 0.08);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.1);
       position: relative;
     }
 
-    .side-menu-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 200; display: none; }
-    .side-drawer { width: 280px; height: 100%; background: white; position: absolute; left: 0; top: 0; display: flex; flex-direction: column; }
-    .drawer-item { padding: 13px 16px; font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 12px; cursor: pointer; color: #334155; }
+    /* STOPPAGE BADGES */
+    .badge-yellow-stop {
+      background: #fef3c7;
+      color: #b45309;
+      border: 1.5px solid #f59e0b;
+      padding: 3px 8px;
+      border-radius: 7px;
+      font-size: 10px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .badge-red-stop {
+      background: #fee2e2;
+      color: #b91c1c;
+      border: 1.5px solid #ef4444;
+      padding: 3px 8px;
+      border-radius: 7px;
+      font-size: 10px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      animation: pulseAlert 1.5s infinite;
+    }
+
+    .side-menu-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); z-index: 200; display: none; }
+    .side-drawer { width: 285px; height: 100%; background: white; position: absolute; left: 0; top: 0; display: flex; flex-direction: column; }
+    .drawer-item { padding: 14px 18px; font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 14px; cursor: pointer; color: #334155; }
     .popup-modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); z-index: 300; display: none; align-items: center; justify-content: center; padding: 16px; }
-    .popup-modal-content { background: white; border-radius: 22px; width: 100%; max-width: 410px; padding: 18px; max-height: 85vh; overflow-y: auto; }
-    .text-input { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 13px; margin-bottom: 10px; outline: none; }
-    .btn-main { width: 100%; padding: 12px; border: none; border-radius: 12px; font-size: 13px; font-weight: 700; color: white; cursor: pointer; }
-    .btn-blue { background: #0284c7; }
-    .btn-green { background: #10b981; }
+    .popup-modal-content { background: white; border-radius: 24px; width: 100%; max-width: 410px; padding: 18px; max-height: 85vh; overflow-y: auto; }
+    .text-input { width: 100%; padding: 11px 13px; border: 1.5px solid var(--border); border-radius: 12px; font-size: 13px; margin-bottom: 10px; outline: none; }
+    .btn-main { width: 100%; padding: 13px; border: none; border-radius: 12px; font-size: 13px; font-weight: 700; color: white; cursor: pointer; }
+    .btn-blue { background: linear-gradient(135deg, #0284c7, #2563eb); }
+    .btn-green { background: linear-gradient(135deg, #10b981, #059669); }
   </style>
 </head>
 <body>
 
-  <!-- FLASH MESSAGE POPUP BANNER -->
+  <!-- FLASH MESSAGE BANNER -->
   <div id="activity-flash-banner" onclick="openNotificationsModal()">
-    <div id="flash-banner-icon" style="font-size:16px; color:#10b981;"><i class="fa-solid fa-bell"></i></div>
+    <div id="flash-banner-icon" style="font-size:18px; color:#10b981;"><i class="fa-solid fa-bell"></i></div>
     <div style="flex:1;">
-      <div style="font-size:10.5px; font-weight:800; color:#38bdf8;" id="flash-banner-title">MR Activity</div>
-      <div style="font-size:12px; font-weight:600; color:#ffffff;" id="flash-banner-msg">New activity on field</div>
+      <div style="font-size:11px; font-weight:800; color:#38bdf8;" id="flash-banner-title">MR Activity</div>
+      <div style="font-size:12.5px; font-weight:600; color:#ffffff;" id="flash-banner-msg">New activity on field</div>
     </div>
-    <button onclick="event.stopPropagation(); hideFlashBanner()" style="background:none; border:none; color:#94a3b8; font-size:16px; cursor:pointer;">&times;</button>
+    <button onclick="event.stopPropagation(); hideFlashBanner()" style="background:none; border:none; color:#94a3b8; font-size:18px; cursor:pointer;">&times;</button>
   </div>
 
   <div class="app-screen">
     <!-- TOP NAVBAR -->
     <nav class="top-navbar">
-      <div style="display:flex; align-items:center; gap:10px;">
-        <button style="background:rgba(255,255,255,0.12); border:none; color:white; width:36px; height:36px; border-radius:10px; cursor:pointer;" onclick="toggleOwnerSideMenu(true)">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <button style="background:rgba(255,255,255,0.12); border:none; color:white; width:38px; height:38px; border-radius:11px; cursor:pointer;" onclick="toggleOwnerSideMenu(true)">
           <i class="fa-solid fa-bars"></i>
         </button>
         <div>
-          <div style="font-size:14px; font-weight:800;">Valchem Admin</div>
-          <div style="font-size:10px; color:#38bdf8;">Super Command Desk</div>
+          <div style="font-size:15px; font-weight:800; letter-spacing:0.3px;">Valchem Admin</div>
+          <div style="font-size:10.5px; color:#38bdf8; font-weight:600;">Live Command Desk</div>
         </div>
       </div>
       <div style="display:flex; align-items:center; gap:8px;">
@@ -153,128 +228,124 @@
           <i class="fa-solid fa-bell"></i>
           <span id="notif-count-badge" class="notif-badge" style="display:none;">0</span>
         </button>
-        <span id="wake-status-badge" style="font-size:10px; background:#1e293b; color:#94a3b8; padding:3px 7px; border-radius:6px; font-weight:700;"><i class="fa-solid fa-bolt"></i> Ready</span>
-        <span style="font-size:11px; background:#10b981; color:white; padding:3px 8px; border-radius:6px; font-weight:800;">Live</span>
+        <span id="wake-status-badge" style="font-size:10px; background:rgba(255,255,255,0.12); color:#94a3b8; padding:4px 8px; border-radius:8px; font-weight:700;"><i class="fa-solid fa-bolt"></i> Ready</span>
+        <span style="font-size:11px; background:#10b981; color:white; padding:4px 9px; border-radius:8px; font-weight:800;">Live</span>
       </div>
     </nav>
 
     <div class="dashboard-body">
 
-      <!-- COMPANY PERFORMANCE BOX -->
-      <div class="section-card" style="background: linear-gradient(135deg, #0f172a, #1e293b); color:white; border:none;">
-        <div class="card-head" style="color:#38bdf8; margin-bottom:10px;">
-          <span><i class="fa-solid fa-building"></i> Company Performance Box</span>
-          <span class="clickable-box" onclick="openCompanyPerformanceModal()" style="font-size:10px; color:#94a3b8; font-weight:700; background:rgba(255,255,255,0.1); padding:3px 8px; border-radius:6px;">Summary &rarr;</span>
+      <!-- COMPANY PERFORMANCE BOX (COLORFUL GRADIENT) -->
+      <div class="section-card" style="background: linear-gradient(135deg, #090d16 0%, #1e1b4b 50%, #0f172a 100%); color:white; border:none; box-shadow:0 8px 20px rgba(15,23,42,0.25);">
+        <div class="card-head" style="color:#38bdf8; margin-bottom:12px;">
+          <span><i class="fa-solid fa-building-circle-check"></i> Performance Matrix</span>
+          <span class="clickable-box" onclick="openCompanyPerformanceModal()" style="font-size:10.5px; color:#38bdf8; font-weight:700; background:rgba(255,255,255,0.1); padding:4px 9px; border-radius:8px;">Summary &rarr;</span>
         </div>
 
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:8px;">
-          <div class="clickable-box" style="background:rgba(22, 101, 52, 0.4); border:1px solid #16a34a; padding:10px; border-radius:12px;" onclick="openFYDetailsModal('cash')">
-            <div style="font-size:9px; font-weight:800; color:#86efac; text-transform:uppercase;">Cash Collected (FY)</div>
-            <div style="font-size:17px; font-weight:800; color:#4ade80; margin-top:2px;" id="owner-fy-cash-sum">₹0</div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:9px; margin-bottom:9px;">
+          <div class="clickable-box" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(5, 150, 105, 0.4)); border:1.5px solid #10b981; padding:12px; border-radius:14px;" onclick="openFYDetailsModal('cash')">
+            <div style="font-size:9.5px; font-weight:800; color:#86efac; text-transform:uppercase;">Cash Collected (FY)</div>
+            <div style="font-size:18px; font-weight:800; color:#4ade80; margin-top:2px;" id="owner-fy-cash-sum">₹0</div>
             <div style="font-size:9.5px; color:#bbf7d0;" id="owner-fy-label">This FY &rarr;</div>
           </div>
-          <div class="clickable-box" style="background:rgba(180, 83, 9, 0.4); border:1px solid #f59e0b; padding:10px; border-radius:12px;" onclick="openFYDetailsModal('pob')">
-            <div style="font-size:9px; font-weight:800; color:#fde68a; text-transform:uppercase;">POB Collected (FY)</div>
-            <div style="font-size:17px; font-weight:800; color:#fbbf24; margin-top:2px;" id="owner-fy-pob-sum">₹0</div>
+          <div class="clickable-box" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(217, 119, 6, 0.4)); border:1.5px solid #f59e0b; padding:12px; border-radius:14px;" onclick="openFYDetailsModal('pob')">
+            <div style="font-size:9.5px; font-weight:800; color:#fde68a; text-transform:uppercase;">POB Booked (FY)</div>
+            <div style="font-size:18px; font-weight:800; color:#fbbf24; margin-top:2px;" id="owner-fy-pob-sum">₹0</div>
             <div style="font-size:9.5px; color:#fef3c7;">Full FY &rarr;</div>
           </div>
         </div>
 
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
-          <div class="clickable-box" onclick="openPartyWiseDrilldown('cash', 'today', 'ALL')" style="background:rgba(255,255,255,0.06); padding:9px 10px; border-radius:12px;">
-            <div style="font-size:9px; color:#cbd5e1;">COLLECTION TODAY</div>
+          <div class="clickable-box" onclick="openPartyWiseDrilldown('cash', 'today', 'ALL')" style="background:rgba(255,255,255,0.06); padding:10px; border-radius:12px; border:1px solid rgba(255,255,255,0.08);">
+            <div style="font-size:9px; color:#cbd5e1; font-weight:700;">COLLECTION TODAY</div>
             <div style="font-size:16px; font-weight:800; color:#fde047; margin-top:2px;" id="comp-cash-today">₹0</div>
-            <div style="font-size:8.5px; color:#94a3b8; margin-top:2px;">Tap party list &rarr;</div>
+            <div style="font-size:8.5px; color:#94a3b8; margin-top:2px;">Party List &rarr;</div>
           </div>
-          <div class="clickable-box" onclick="openPartyWiseDrilldown('cash', 'month', 'ALL')" style="background:rgba(255,255,255,0.06); padding:9px 10px; border-radius:12px;">
-            <div style="font-size:9px; color:#cbd5e1;">COLLECTION MONTH</div>
+          <div class="clickable-box" onclick="openPartyWiseDrilldown('cash', 'month', 'ALL')" style="background:rgba(255,255,255,0.06); padding:10px; border-radius:12px; border:1px solid rgba(255,255,255,0.08);">
+            <div style="font-size:9px; color:#cbd5e1; font-weight:700;">COLLECTION MONTH</div>
             <div style="font-size:16px; font-weight:800; color:#facc15; margin-top:2px;" id="comp-cash-month">₹0</div>
-            <div style="font-size:8.5px; color:#94a3b8; margin-top:2px;">Tap party list &rarr;</div>
+            <div style="font-size:8.5px; color:#94a3b8; margin-top:2px;">Party List &rarr;</div>
           </div>
-          <div class="clickable-box" onclick="openPartyWiseDrilldown('pob', 'today', 'ALL')" style="background:rgba(255,255,255,0.06); padding:9px 10px; border-radius:12px;">
-            <div style="font-size:9px; color:#cbd5e1;">POB TODAY</div>
+          <div class="clickable-box" onclick="openPartyWiseDrilldown('pob', 'today', 'ALL')" style="background:rgba(255,255,255,0.06); padding:10px; border-radius:12px; border:1px solid rgba(255,255,255,0.08);">
+            <div style="font-size:9px; color:#cbd5e1; font-weight:700;">POB TODAY</div>
             <div style="font-size:16px; font-weight:800; color:#4ade80; margin-top:2px;" id="comp-pob-today">₹0</div>
-            <div style="font-size:8.5px; color:#94a3b8; margin-top:2px;">Tap party list &rarr;</div>
+            <div style="font-size:8.5px; color:#94a3b8; margin-top:2px;">Party List &rarr;</div>
           </div>
-          <div class="clickable-box" onclick="openPartyWiseDrilldown('pob', 'month', 'ALL')" style="background:rgba(255,255,255,0.06); padding:9px 10px; border-radius:12px;">
-            <div style="font-size:9px; color:#cbd5e1;">POB MONTH</div>
+          <div class="clickable-box" onclick="openPartyWiseDrilldown('pob', 'month', 'ALL')" style="background:rgba(255,255,255,0.06); padding:10px; border-radius:12px; border:1px solid rgba(255,255,255,0.08);">
+            <div style="font-size:9px; color:#cbd5e1; font-weight:700;">POB MONTH</div>
             <div style="font-size:16px; font-weight:800; color:#22c55e; margin-top:2px;" id="comp-pob-month">₹0</div>
-            <div style="font-size:8.5px; color:#94a3b8; margin-top:2px;">Tap party list &rarr;</div>
+            <div style="font-size:8.5px; color:#94a3b8; margin-top:2px;">Party List &rarr;</div>
           </div>
         </div>
       </div>
 
-      <!-- FILTER BY STAFF OVER MR PERFORMANCE BOX -->
+      <!-- FILTER BY STAFF BAR -->
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-        <span style="font-size:11.5px; font-weight:800; color:#64748b;">Filter Staff Performance:</span>
+        <span style="font-size:12px; font-weight:800; color:#475569;"><i class="fa-solid fa-filter" style="color:#0284c7;"></i> Select Field Staff:</span>
       </div>
       <div class="mr-filter-scroll" id="owner-mr-filters-bar-top"></div>
 
       <!-- DEDICATED MR PERFORMANCE BOX -->
-      <div class="section-card" style="background:#ffffff; border:1.5px solid #0284c7;">
-        <div class="card-head" style="margin-bottom:8px;">
+      <div class="section-card" style="background:#ffffff; border:2px solid #0284c7;">
+        <div class="card-head" style="margin-bottom:10px;">
           <span style="display:flex; align-items:center; gap:6px;">
             <i class="fa-solid fa-user-tie" style="color:#0284c7;"></i>
-            <span style="font-weight:800; color:#0f172a;">MR Performance Box</span>
+            <span style="font-weight:800; color:#0f172a;">MR Performance Stats</span>
           </span>
-          <span id="active-mr-badge" style="font-size:10.5px; background:#e0f2fe; color:#0284c7; padding:3px 8px; border-radius:6px; font-weight:800;">
+          <span id="active-mr-badge" style="font-size:11px; background:#e0f2fe; color:#0284c7; padding:4px 9px; border-radius:8px; font-weight:800;">
             All Staff
           </span>
         </div>
 
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
-          <div class="clickable-box" onclick="openPartyWiseDrilldown('cash', 'today', currentOwnerFilterMR)" style="background:#fffbeb; border:1px solid #fde68a; padding:10px; border-radius:12px;">
-            <div style="font-size:9px; font-weight:800; color:#92400e; text-transform:uppercase;">Cash Collected Today</div>
+          <div class="clickable-box" onclick="openPartyWiseDrilldown('cash', 'today', currentOwnerFilterMR)" style="background:#fffbeb; border:1.5px solid #fde68a; padding:10px; border-radius:12px;">
+            <div style="font-size:9px; font-weight:800; color:#92400e; text-transform:uppercase;">Cash Today</div>
             <div style="font-size:16px; font-weight:800; color:#b45309; margin-top:2px;" id="mr-box-cash-today">₹0</div>
-            <div style="font-size:9px; color:#d97706; margin-top:2px;">Tap party list &rarr;</div>
+            <div style="font-size:9px; color:#d97706; margin-top:2px;">View List &rarr;</div>
           </div>
 
-          <div class="clickable-box" onclick="openPartyWiseDrilldown('pob', 'today', currentOwnerFilterMR)" style="background:#f0fdf4; border:1px solid #bbf7d0; padding:10px; border-radius:12px;">
-            <div style="font-size:9px; font-weight:800; color:#166534; text-transform:uppercase;">POB Done Today</div>
+          <div class="clickable-box" onclick="openPartyWiseDrilldown('pob', 'today', currentOwnerFilterMR)" style="background:#f0fdf4; border:1.5px solid #bbf7d0; padding:10px; border-radius:12px;">
+            <div style="font-size:9px; font-weight:800; color:#166534; text-transform:uppercase;">POB Today</div>
             <div style="font-size:16px; font-weight:800; color:#15803d; margin-top:2px;" id="mr-box-pob-today">₹0</div>
-            <div style="font-size:9px; color:#16a34a; margin-top:2px;">Tap party list &rarr;</div>
+            <div style="font-size:9px; color:#16a34a; margin-top:2px;">View List &rarr;</div>
           </div>
 
-          <div class="clickable-box" onclick="openPartyWiseDrilldown('cash', 'month', currentOwnerFilterMR)" style="background:#fef3c7; border:1px solid #fcd34d; padding:10px; border-radius:12px;">
-            <div style="font-size:9px; font-weight:800; color:#78350f; text-transform:uppercase;">Cash Collected This Month</div>
+          <div class="clickable-box" onclick="openPartyWiseDrilldown('cash', 'month', currentOwnerFilterMR)" style="background:#fef3c7; border:1.5px solid #fcd34d; padding:10px; border-radius:12px;">
+            <div style="font-size:9px; font-weight:800; color:#78350f; text-transform:uppercase;">Cash Month</div>
             <div style="font-size:16px; font-weight:800; color:#92400e; margin-top:2px;" id="mr-box-cash-month">₹0</div>
-            <div style="font-size:9px; color:#b45309; margin-top:2px;">Tap party list &rarr;</div>
+            <div style="font-size:9px; color:#b45309; margin-top:2px;">View List &rarr;</div>
           </div>
 
-          <div class="clickable-box" onclick="openPartyWiseDrilldown('pob', 'month', currentOwnerFilterMR)" style="background:#ecfdf5; border:1px solid #a7f3d0; padding:10px; border-radius:12px;">
-            <div style="font-size:9px; font-weight:800; color:#065f46; text-transform:uppercase;">Total POB Done This Month</div>
+          <div class="clickable-box" onclick="openPartyWiseDrilldown('pob', 'month', currentOwnerFilterMR)" style="background:#ecfdf5; border:1.5px solid #a7f3d0; padding:10px; border-radius:12px;">
+            <div style="font-size:9px; font-weight:800; color:#065f46; text-transform:uppercase;">POB Month</div>
             <div style="font-size:16px; font-weight:800; color:#059669; margin-top:2px;" id="mr-box-pob-month">₹0</div>
-            <div style="font-size:9px; color:#059669; margin-top:2px;">Tap party list &rarr;</div>
+            <div style="font-size:9px; color:#059669; margin-top:2px;">View List &rarr;</div>
           </div>
         </div>
       </div>
 
-      <!-- MR PATHWAY MAP -->
-      <div class="section-card" style="background:#f0f9ff; border:1.5px solid #bae6fd;">
+      <!-- BREADCRUMB TRAIL MAP -->
+      <div class="section-card" style="background:#f0f9ff; border:2px solid #7dd3fc;">
         <div class="card-head" style="color:#0369a1; margin-bottom:8px;">
-          <span><i class="fa-solid fa-route" style="color:#0284c7;"></i> MR Day Pathway & Trail</span>
-          <span style="font-size:10px; background:#0284c7; color:white; padding:2px 8px; border-radius:6px; font-weight:700;" id="pathway-mr-tag">All Visits</span>
+          <span><i class="fa-solid fa-route" style="color:#0284c7;"></i> Live Breadcrumb Trail</span>
+          <span style="font-size:10px; background:#0284c7; color:white; padding:3px 9px; border-radius:8px; font-weight:800;" id="pathway-mr-tag">All Visits</span>
         </div>
         <div id="pathway-map-container"></div>
       </div>
 
-      <!-- FIELD STAFF (TAP NAME FOR LOCATION) -->
-      <div class="section-card" style="background:#ffffff; border:1.5px solid #e2e8f0;">
-        <div class="card-head" style="color:#0f172a; margin-bottom:8px;">
-          <span><i class="fa-solid fa-users" style="color:#0284c7;"></i> Field Staff (Tap name for location)</span>
+      <!-- FIELD STAFF WITH 30M / 1HR STOPPAGE BADGES -->
+      <div class="section-card" style="background:#ffffff; border:1.5px solid #cbd5e1;">
+        <div class="card-head" style="color:#0f172a; margin-bottom:10px;">
+          <span><i class="fa-solid fa-users" style="color:#0284c7;"></i> Field Staff Tracking & Stoppage</span>
         </div>
         <div id="live-mr-tracking-stream"></div>
       </div>
 
-      <!-- MR FILTERS (BOTTOM BAR) -->
-      <div style="font-size:12px; font-weight:800; color:#64748b; margin-bottom:8px;">Filter by Staff:</div>
-      <div class="mr-filter-scroll" id="owner-mr-filters-bar"></div>
-
-      <!-- CALLS STREAM (MERGED CALLS - SQUARE GREEN CARDS) -->
+      <!-- CALLS STREAM (SQUARE GREEN CARDS) -->
       <div class="section-card">
         <div class="card-head">
           <span>Doctor Calls & Visits</span>
-          <span style="font-size:11px; background:#e0f2fe; color:#0284c7; padding:3px 8px; border-radius:6px; font-weight:800;" id="owner-filtered-count">0 Records</span>
+          <span style="font-size:11px; background:#e0f2fe; color:#0284c7; padding:3px 9px; border-radius:8px; font-weight:800;" id="owner-filtered-count">0 Records</span>
         </div>
         <div id="owner-records-stream"></div>
       </div>
@@ -283,8 +354,8 @@
     <!-- SIDE DRAWER MENU -->
     <div id="owner-side-menu" class="side-menu-overlay" onclick="toggleOwnerSideMenu(false)">
       <div class="side-drawer" onclick="event.stopPropagation()">
-        <div style="background:var(--navy); color:white; padding:24px 18px;">
-          <div style="font-size:16px; font-weight:800;">Valchem Admin</div>
+        <div style="background:linear-gradient(135deg, #0b1329, #1e1b4b); color:white; padding:26px 18px;">
+          <div style="font-size:17px; font-weight:800;">Valchem Admin</div>
           <div style="font-size:11px; color:#38bdf8;">Super Control Desk</div>
         </div>
         <div style="padding:14px; flex:1;">
@@ -336,15 +407,13 @@
       selectedDate: ''
     };
 
-    window.cloudStaff = [
-      { name: "Rahul Sharma", phone: "9876543210" },
-      { name: "Amit Verma", phone: "9811223344" }
-    ];
+    window.cloudStaff = [];
     window.cloudTransactions = [];
     window.cloudLocations = {};
+    window.cloudBreadcrumbs = {};
     window.cloudProducts = [];
 
-    // NOTIFICATIONS ENGINE WITH 2-DAY (48-HOUR) AUTO-PURGE
+    // 48-HOUR PERSISTENT NOTIFICATION ENGINE
     const TWO_DAYS_MS = 2 * 24 * 60 * 60 * 1000;
 
     function getCleanStoredNotifications() {
@@ -352,7 +421,6 @@
         const raw = localStorage.getItem("valchem_owner_notifications");
         let list = raw ? JSON.parse(raw) : [];
         const now = Date.now();
-        // 2 din se purane notifications filter out kar do
         list = list.filter(item => (now - (item.createdAt || 0)) <= TWO_DAYS_MS);
         localStorage.setItem("valchem_owner_notifications", JSON.stringify(list));
         return list;
@@ -365,8 +433,7 @@
       notifItem.createdAt = Date.now();
       let list = getCleanStoredNotifications();
       list.unshift(notifItem);
-      // Extra safety: cap to recent 150 items
-      if (list.length > 150) list = list.slice(0, 150);
+      if (list.length > 200) list = list.slice(0, 200);
       localStorage.setItem("valchem_owner_notifications", JSON.stringify(list));
       updateNotifBadge();
     }
@@ -405,12 +472,18 @@
       } else if (type === 'cash') {
         banner.style.borderLeftColor = '#f59e0b';
         iconEl.innerHTML = '<i class="fa-solid fa-indian-rupee-sign" style="color:#f59e0b;"></i>';
-      } else if (type === 'punch') {
-        banner.style.borderLeftColor = '#38bdf8';
-        iconEl.innerHTML = '<i class="fa-solid fa-clipboard-user" style="color:#38bdf8;"></i>';
-      } else if (type === 'doc_add') {
-        banner.style.borderLeftColor = '#8b5cf6';
-        iconEl.innerHTML = '<i class="fa-solid fa-user-plus" style="color:#8b5cf6;"></i>';
+      } else if (type === 'punch_in') {
+        banner.style.borderLeftColor = '#10b981';
+        iconEl.innerHTML = '<i class="fa-solid fa-right-to-bracket" style="color:#10b981;"></i>';
+      } else if (type === 'punch_out') {
+        banner.style.borderLeftColor = '#ef4444';
+        iconEl.innerHTML = '<i class="fa-solid fa-right-from-bracket" style="color:#ef4444;"></i>';
+      } else if (type === 'stop_yellow') {
+        banner.style.borderLeftColor = '#f59e0b';
+        iconEl.innerHTML = '<i class="fa-solid fa-triangle-exclamation" style="color:#f59e0b;"></i>';
+      } else if (type === 'stop_red') {
+        banner.style.borderLeftColor = '#ef4444';
+        iconEl.innerHTML = '<i class="fa-solid fa-circle-exclamation" style="color:#ef4444;"></i>';
       } else {
         banner.style.borderLeftColor = '#0284c7';
         iconEl.innerHTML = '<i class="fa-solid fa-user-doctor" style="color:#0284c7;"></i>';
@@ -432,19 +505,27 @@
       const title = document.getElementById("details-modal-title");
       const body = document.getElementById("details-modal-body");
       
-      title.innerHTML = '<i class="fa-solid fa-bell" style="color:#0284c7;"></i> Activity Notifications (' + list.length + ')';
+      title.innerHTML = '<i class="fa-solid fa-bell" style="color:#0284c7;"></i> Notifications Log (' + list.length + ')';
       
       if (list.length === 0) {
-        body.innerHTML = '<div style="text-align:center; padding:30px 10px; color:#94a3b8;"><i class="fa-regular fa-bell-slash" style="font-size:32px; margin-bottom:8px; display:block;"></i><span style="font-size:13px; font-weight:600;">No activity in last 48 hours</span></div>';
+        body.innerHTML = '<div style="text-align:center; padding:32px 10px; color:#94a3b8;"><i class="fa-regular fa-bell-slash" style="font-size:34px; margin-bottom:8px; display:block;"></i><span style="font-size:13px; font-weight:600;">No activity in last 48 hours</span></div>';
       } else {
-        body.innerHTML = '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; padding-bottom:6px; border-bottom:1px solid #f1f5f9;"><span style="font-size:11px; color:#64748b; font-weight:700;">LAST 48 HOURS EVENTS</span><button onclick="clearAllNotifications()" style="background:#fee2e2; border:none; color:#dc2626; font-size:10px; font-weight:800; padding:3px 8px; border-radius:6px; cursor:pointer;">Clear All</button></div><div style="max-height:360px; overflow-y:auto;">' +
+        body.innerHTML = '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding-bottom:6px; border-bottom:1px solid #f1f5f9;"><span style="font-size:11px; color:#64748b; font-weight:800;">SAVED NOTIFICATIONS (48H AUTO-EXPIRE)</span><button onclick="clearAllNotifications()" style="background:#fee2e2; border:none; color:#dc2626; font-size:10px; font-weight:800; padding:4px 9px; border-radius:6px; cursor:pointer;">Clear All</button></div><div style="max-height:380px; overflow-y:auto;">' +
           list.map(function(n) {
-            const iconClass = n.type === 'pob' ? 'fa-cart-shopping' : (n.type === 'cash' ? 'fa-indian-rupee-sign' : (n.type === 'punch' ? 'fa-clipboard-user' : (n.type === 'doc_add' ? 'fa-user-plus' : 'fa-user-doctor')));
-            const iconColor = n.type === 'pob' ? '#10b981' : (n.type === 'cash' ? '#f59e0b' : (n.type === 'punch' ? '#38bdf8' : (n.type === 'doc_add' ? '#8b5cf6' : '#0284c7')));
-            return '<div style="display:flex; gap:10px; align-items:flex-start; padding:10px; border-radius:10px; background:#f8fafc; border:1px solid #e2e8f0; margin-bottom:8px;">' +
-              '<div style="font-size:15px; margin-top:2px; color:' + iconColor + ';"><i class="fa-solid ' + iconClass + '"></i></div>' +
+            let iconClass = 'fa-user-doctor';
+            let iconColor = '#0284c7';
+
+            if (n.type === 'pob') { iconClass = 'fa-cart-shopping'; iconColor = '#10b981'; }
+            else if (n.type === 'cash') { iconClass = 'fa-indian-rupee-sign'; iconColor = '#f59e0b'; }
+            else if (n.type === 'punch_in') { iconClass = 'fa-right-to-bracket'; iconColor = '#10b981'; }
+            else if (n.type === 'punch_out') { iconClass = 'fa-right-from-bracket'; iconColor = '#ef4444'; }
+            else if (n.type === 'stop_yellow') { iconClass = 'fa-triangle-exclamation'; iconColor = '#f59e0b'; }
+            else if (n.type === 'stop_red') { iconClass = 'fa-circle-exclamation'; iconColor = '#ef4444'; }
+
+            return '<div style="display:flex; gap:12px; align-items:flex-start; padding:11px 12px; border-radius:12px; background:#f8fafc; border:1px solid #e2e8f0; margin-bottom:8px;">' +
+              '<div style="font-size:16px; margin-top:2px; color:' + iconColor + ';"><i class="fa-solid ' + iconClass + '"></i></div>' +
               '<div style="flex:1;"><div style="display:flex; justify-content:space-between; align-items:center;"><b style="font-size:12.5px; color:#0f172a;">' + n.title + '</b><span style="font-size:10px; color:#94a3b8;">' + n.time + '</span></div>' +
-              '<div style="font-size:11.5px; color:#475569; margin-top:2px;">' + n.msg + '</div>' +
+              '<div style="font-size:11.5px; color:#475569; margin-top:3px;">' + n.msg + '</div>' +
               '<div style="font-size:9.5px; color:#94a3b8; margin-top:2px;"><i class="fa-regular fa-calendar"></i> ' + (n.date || '') + '</div></div></div>';
           }).join('') + '</div>';
       }
@@ -457,7 +538,23 @@
       openNotificationsModal();
     }
 
-    // LOCAL DATE ENGINE (IST Midnight Friendly)
+    // HAVERSINE FORMULA FOR 100M STOPPAGE DISTANCE
+    function calculateDistanceMeters(lat1, lon1, lat2, lon2) {
+      if (!lat1 || !lon1 || !lat2 || !lon2) return 9999;
+      const R = 6371e3;
+      const phi1 = lat1 * Math.PI / 180;
+      const phi2 = lat2 * Math.PI / 180;
+      const deltaPhi = (lat2 - lat1) * Math.PI / 180;
+      const deltaLambda = (lon2 - lon1) * Math.PI / 180;
+
+      const a = Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
+                Math.cos(phi1) * Math.cos(phi2) *
+                Math.sin(deltaLambda / 2) * Math.sin(deltaLambda / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c;
+    }
+
+    // DATE HELPERS
     function getTodayDateString() {
       const d = new Date();
       return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -466,30 +563,23 @@
       const d = new Date();
       return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
     }
-
     function getFinancialYearRange() {
       const now = new Date(), y = now.getFullYear(), m = now.getMonth() + 1;
       return m >= 4 ? { s: y + '-04-01', e: (y+1) + '-03-31', label: 'FY ' + y + '-' + String(y+1).slice(-2) } : { s: (y-1) + '-04-01', e: y + '-03-31', label: 'FY ' + (y-1) + '-' + String(y).slice(-2) };
     }
 
-    function toggleOwnerSideMenu(show) { 
-      document.getElementById("owner-side-menu").style.display = show ? "block" : "none"; 
-    }
-    function closeDetailsModal() { 
-      document.getElementById("universal-details-modal").style.display = "none"; 
-    }
+    function toggleOwnerSideMenu(show) { document.getElementById("owner-side-menu").style.display = show ? "block" : "none"; }
+    function closeDetailsModal() { document.getElementById("universal-details-modal").style.display = "none"; }
 
     function initPathwayMap() {
       if (typeof L === 'undefined') return;
       if (!pathwayMap) {
         pathwayMap = L.map('pathway-map-container', { zoomControl: false }).setView([27.1767, 78.0081], 12);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          maxZoom: 18,
-          attribution: '© OSM'
-        }).addTo(pathwayMap);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© OSM' }).addTo(pathwayMap);
       }
     }
 
+    // BREADCRUMB TRAIL WITH GRADIENT ROUTE & NUMBERED PINS
     function updateMRPathway(calls) {
       initPathwayMap();
       if (!pathwayMap) return;
@@ -498,54 +588,75 @@
       pathwayMarkers.forEach(function(m) { pathwayMap.removeLayer(m); });
       pathwayMarkers = [];
 
-      const validCalls = (calls || [])
-        .filter(function(c) { return c.lat && c.lng && !isNaN(parseFloat(c.lat)) && !isNaN(parseFloat(c.lng)); })
-        .sort(function(a, b) { return (a.timestamp || 0) - (b.timestamp || 0); });
+      let points = [];
 
-      if (validCalls.length === 0) return;
+      // Check if breadcrumbs are present for selected MR
+      if (currentOwnerFilterMR !== "ALL") {
+        const staffKey = currentOwnerFilterMR.replace(/\s+/g, '_');
+        const trailPoints = (window.cloudBreadcrumbs || {})[staffKey] || [];
+        if (trailPoints.length > 0) {
+          points = trailPoints.map(p => ({ lat: p.lat, lng: p.lng, label: p.time || 'Route Point', isTrail: true }));
+        }
+      }
 
-      const latLngs = validCalls.map(function(c) { return [parseFloat(c.lat), parseFloat(c.lng)]; });
+      // If no continuous trail points, use visited doctor locations
+      if (points.length === 0) {
+        const validCalls = (calls || [])
+          .filter(c => c.lat && c.lng && !isNaN(parseFloat(c.lat)) && !isNaN(parseFloat(c.lng)))
+          .sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+
+        points = validCalls.map((c, i) => ({ lat: parseFloat(c.lat), lng: parseFloat(c.lng), label: '#' + (i + 1) + ': ' + c.doctor + ' (' + (c.callTime || '') + ')' }));
+      }
+
+      if (points.length === 0) return;
+
+      const latLngs = points.map(p => [p.lat, p.lng]);
 
       pathwayPolyline = L.polyline(latLngs, {
-        color: '#0284c7',
-        weight: 3.5,
-        dashArray: '5, 8',
-        opacity: 0.85
+        color: '#2563eb',
+        weight: 4,
+        opacity: 0.85,
+        smoothFactor: 1
       }).addTo(pathwayMap);
 
-      validCalls.forEach(function(call, index) {
+      points.forEach(function(p, index) {
         const isStart = index === 0;
-        const isLatest = index === validCalls.length - 1;
-        const color = isStart ? '#10b981' : (isLatest ? '#ef4444' : '#0284c7');
+        const isLatest = index === points.length - 1;
+        const pinColor = isStart ? '#10b981' : (isLatest ? '#ef4444' : '#0284c7');
 
-        const marker = L.circleMarker([parseFloat(call.lat), parseFloat(call.lng)], {
-          radius: isLatest ? 7 : 5,
-          fillColor: color,
+        const marker = L.circleMarker([p.lat, p.lng], {
+          radius: isLatest ? 8 : (isStart ? 7 : 5),
+          fillColor: pinColor,
           color: '#ffffff',
           weight: 2,
           opacity: 1,
-          fillOpacity: 0.9
-        }).addTo(pathwayMap).bindPopup('<b>#' + (index + 1) + ': ' + call.doctor + '</b><br>' + (call.callTime || ''));
+          fillOpacity: 0.95
+        }).addTo(pathwayMap).bindPopup('<b>' + p.label + '</b>');
 
         pathwayMarkers.push(marker);
       });
 
-      pathwayMap.fitBounds(pathwayPolyline.getBounds(), { padding: [15, 15] });
+      pathwayMap.fitBounds(pathwayPolyline.getBounds(), { padding: [20, 20] });
     }
 
-    // FULL FIREBASE REALTIME LISTENERS FOR ALL MR ACTIVITIES
+    // FULL FIREBASE REALTIME LISTENERS
     function listenToCloudData() {
-      // 1. STAFF LISTENER
+      // 1. STAFF MASTER LISTENER
       db.ref("staff").on("value", function(snapshot) {
         const val = snapshot.val();
-        if (val && Object.keys(val).length > 0) {
+        if (val) {
           window.cloudStaff = Object.values(val);
+        } else {
+          window.cloudStaff = [
+            { name: "Rahul Sharma", phone: "9876543210" },
+            { name: "Amit Verma", phone: "9811223344" }
+          ];
         }
         renderFilterBar();
         renderLiveLocations();
       });
 
-      // 2. TRANSACTIONS LISTENER (CALLS, POB, CASH)
+      // 2. CALLS & TRANSACTIONS LISTENER
       let initialTxLoad = true;
       db.ref("transactions").on("value", function(snapshot) {
         const val = snapshot.val();
@@ -562,62 +673,82 @@
         const hasCash = parseFloat(latest.cashReceived) > 0;
 
         if (hasPob && hasCash) {
-          showFlashBanner('POB & Cash Collection: ' + latest.mrName, 'POB: ₹' + latest.pobAmount + ' | Cash: ₹' + latest.cashReceived + ' at Dr. ' + latest.doctor, 'pob');
+          showFlashBanner('POB & Cash: ' + latest.mrName, 'POB: ₹' + latest.pobAmount + ' | Cash: ₹' + latest.cashReceived + ' at Dr. ' + latest.doctor, 'pob');
         } else if (hasPob) {
           showFlashBanner('POB Booked: ' + latest.mrName, '₹' + latest.pobAmount + ' booked at Dr. ' + latest.doctor, 'pob');
         } else if (hasCash) {
           showFlashBanner('Cash Received: ' + latest.mrName, '₹' + latest.cashReceived + ' collected from Dr. ' + latest.doctor, 'cash');
         } else {
-          showFlashBanner('Doctor Detailing Call: ' + latest.mrName, 'Visited Dr. ' + latest.doctor + ' (' + (latest.area || 'Field') + ')', 'call');
+          showFlashBanner('Doctor Visited: ' + latest.mrName, 'Dr. ' + latest.doctor + ' (' + (latest.area || 'Field') + ')', 'call');
         }
       });
       setTimeout(() => { initialTxLoad = false; }, 3000);
 
-      // 3. LIVE GPS LOCATION & PUNCH-IN TRACKER
-      let initialLocationLoad = true;
-      db.ref("mr_live_locations").on("value", function(snapshot) {
-        const val = snapshot.val();
-        const prevLocs = window.cloudLocations || {};
-        window.cloudLocations = val || {};
+      // 3. LIVE GPS & 100M STOPPAGE LISTENER (30 MIN YELLOW / 60 MIN RED)
+      let initialLocLoad = true;
+      let prevStaffState = {};
 
-        if (!initialLocationLoad && val) {
-          Object.keys(val).forEach(function(key) {
-            const currentObj = val[key];
-            const prevObj = prevLocs[key];
-            if (currentObj && (!prevObj || prevObj.lastUpdatedTime !== currentObj.lastUpdatedTime)) {
-              const staffName = currentObj.mrName || key.replace(/_/g, ' ');
-              showFlashBanner('MR Punch-In / GPS Live: ' + staffName, 'Active at ' + (currentObj.lastUpdatedTime || 'Field'), 'punch');
+      db.ref("mr_live_locations").on("value", function(snapshot) {
+        const val = snapshot.val() || {};
+        window.cloudLocations = val;
+
+        const now = Date.now();
+
+        Object.keys(val).forEach(function(key) {
+          const cur = val[key];
+          const staffName = cur.mrName || key.replace(/_/g, ' ');
+          const prev = prevStaffState[key];
+
+          // PUNCH IN / OUT DETECTION
+          if (!initialLocLoad && prev) {
+            if (prev.dutyStatus !== cur.dutyStatus) {
+              if (cur.dutyStatus === 'active') {
+                showFlashBanner('Punch-In: ' + staffName, staffName + ' ne duty start ki at ' + (cur.lastUpdatedTime || ''), 'punch_in');
+              } else if (cur.dutyStatus === 'offline') {
+                showFlashBanner('Punch-Out: ' + staffName, staffName + ' ne duty stop/punch-out kiya', 'punch_out');
+              }
             }
-          });
-        }
-        initialLocationLoad = false;
+          }
+
+          // STOPPAGE CALCULATION (100 METERS RADIUS)
+          if (cur.lat && cur.lng) {
+            let stayDurationMinutes = 0;
+            
+            if (cur.stayStartTime) {
+              stayDurationMinutes = Math.floor((now - cur.stayStartTime) / (60 * 1000));
+            } else if (prev && prev.lat && prev.lng) {
+              const dist = calculateDistanceMeters(prev.lat, prev.lng, cur.lat, cur.lng);
+              if (dist <= 100) {
+                stayDurationMinutes = prev.stayMinutes ? prev.stayMinutes + 5 : 5;
+              }
+            }
+
+            cur.stayMinutes = stayDurationMinutes;
+
+            // Trigger Yellow & Red Alerts
+            if (!initialLocLoad) {
+              if (stayDurationMinutes >= 60 && (!prev || prev.stayMinutes < 60)) {
+                showFlashBanner('🚨 Red Alert Stoppage (1 Hr): ' + staffName, staffName + ' pichhle 1 ghante se 100m ke dayre mein ruke hue hain!', 'stop_red');
+              } else if (stayDurationMinutes >= 30 && (!prev || prev.stayMinutes < 30)) {
+                showFlashBanner('⚠️ Stoppage Alert (30m): ' + staffName, staffName + ' pichhle 30 minute se ek hi sthan par hain (Doctor Meeting/Waiting).', 'stop_yellow');
+              }
+            }
+          }
+
+          prevStaffState[key] = Object.assign({}, cur);
+        });
+
+        initialLocLoad = false;
         renderLiveLocations();
       });
 
-      // 4. NEW DOCTOR ADDED IN BELT LISTENER
-      let initialBeltLoad = true;
-      let totalDoctorsCount = 0;
-      db.ref("belts").on("value", function(snapshot) {
-        const val = snapshot.val();
-        if (!val) return;
-        const beltsList = Object.values(val);
-        let currentCount = 0;
-        let lastAddedDoc = null;
-
-        beltsList.forEach(function(belt) {
-          if (belt.doctors && Array.isArray(belt.doctors)) {
-            currentCount += belt.doctors.length;
-            if (belt.doctors.length > 0) {
-              lastAddedDoc = belt.doctors[belt.doctors.length - 1];
-            }
-          }
-        });
-
-        if (!initialBeltLoad && currentCount > totalDoctorsCount && lastAddedDoc) {
-          showFlashBanner('New Doctor Added!', 'Dr. ' + (lastAddedDoc.name || 'New Doctor') + ' (' + (lastAddedDoc.area || 'Belt') + ') add kiya gaya', 'doc_add');
+      // 4. BREADCRUMB ROUTE HISTORY LISTENER
+      const todayStr = getTodayDateString();
+      db.ref("staff_routes/" + todayStr).on("value", function(snapshot) {
+        window.cloudBreadcrumbs = snapshot.val() || {};
+        if (currentOwnerFilterMR !== "ALL") {
+          loadOwnerDashboard();
         }
-        totalDoctorsCount = currentCount;
-        initialBeltLoad = false;
       });
 
       // 5. PRODUCTS
@@ -635,9 +766,6 @@
 
       const topBar = document.getElementById("owner-mr-filters-bar-top");
       if (topBar) topBar.innerHTML = filterHtml;
-
-      const bottomBar = document.getElementById("owner-mr-filters-bar");
-      if (bottomBar) bottomBar.innerHTML = filterHtml;
     }
 
     function handleStaffClick(mrName) {
@@ -651,17 +779,40 @@
       }
     }
 
+    // RENDER FIELD STAFF WITH STOPPAGE STATUS (30 MIN YELLOW & 1 HR RED)
     function renderLiveLocations() {
       const staff = window.cloudStaff || [];
       const locs = window.cloudLocations || {};
+      
       document.getElementById("live-mr-tracking-stream").innerHTML = staff.map(function(s) {
         const key = s.name ? s.name.replace(/\s+/g, '_') : '';
         const l = locs[key];
         const isSelected = currentOwnerFilterMR === s.name;
-        return '<div class="clickable-box" onclick="handleStaffClick(\'' + s.name + '\')" style="display:flex; justify-content:space-between; align-items:center; background:' + (isSelected ? '#e0f2fe' : '#f8fafc') + '; padding:10px 12px; border-radius:12px; margin-bottom:8px; border:1px solid ' + (isSelected ? '#0284c7' : '#e2e8f0') + ';">' +
-          '<div><div style="font-size:14px; font-weight:800; color:#0f172a; display:flex; align-items:center; gap:6px;"><span>' + s.name + '</span><i class="fa-solid fa-location-crosshairs" style="font-size:12px; color:#0284c7;"></i></div>' +
-          '<div style="font-size:10px; color:#64748b;">' + (l ? 'GPS: ' + l.lastUpdatedTime : 'Offline / In Field') + '</div></div>' +
-          '<div style="display:flex; gap:6px; align-items:center;"><span style="font-size:11px; font-weight:700; color:' + (l ? '#0284c7' : '#94a3b8') + '; background:#ffffff; border:1px solid #cbd5e1; padding:5px 10px; border-radius:8px;"><i class="fa-solid fa-location-arrow"></i> Location</span></div></div>';
+        
+        const stayMin = l ? (l.stayMinutes || 0) : 0;
+        let stoppageBadgeHtml = '';
+
+        if (stayMin >= 60) {
+          stoppageBadgeHtml = '<span class="badge-red-stop"><i class="fa-solid fa-circle-exclamation"></i> Stoppage: ' + stayMin + 'm (1h+ Alert)</span>';
+        } else if (stayMin >= 30) {
+          stoppageBadgeHtml = '<span class="badge-yellow-stop"><i class="fa-solid fa-triangle-exclamation"></i> Stoppage: ' + stayMin + 'm (Wait)</span>';
+        } else if (l && l.lat) {
+          stoppageBadgeHtml = '<span style="font-size:10px; font-weight:700; color:#10b981; background:#ecfdf5; padding:2px 7px; border-radius:6px; border:1px solid #a7f3d0;"><i class="fa-solid fa-person-walking"></i> Moving / Active</span>';
+        }
+
+        return '<div class="clickable-box" onclick="handleStaffClick(\'' + s.name + '\')" style="display:flex; justify-content:space-between; align-items:center; background:' + (isSelected ? '#e0f2fe' : '#ffffff') + '; padding:12px 14px; border-radius:14px; margin-bottom:9px; border:1.5px solid ' + (isSelected ? '#0284c7' : '#e2e8f0') + '; box-shadow:0 2px 6px rgba(0,0,0,0.02);">' +
+          '<div>' +
+            '<div style="font-size:14px; font-weight:800; color:#0f172a; display:flex; align-items:center; gap:6px;">' +
+              '<span>' + s.name + '</span>' +
+              '<i class="fa-solid fa-location-crosshairs" style="font-size:12px; color:#0284c7;"></i>' +
+            '</div>' +
+            '<div style="font-size:10.5px; color:#64748b; margin-top:2px;">' + (l ? 'GPS: ' + (l.lastUpdatedTime || 'Active') : 'Offline / In Field') + '</div>' +
+            '<div style="margin-top:5px;">' + stoppageBadgeHtml + '</div>' +
+          '</div>' +
+          '<div style="display:flex; gap:6px; align-items:center;">' +
+            '<span style="font-size:11.5px; font-weight:700; color:' + (l ? '#0284c7' : '#94a3b8') + '; background:#f8fafc; border:1.5px solid #cbd5e1; padding:6px 11px; border-radius:10px;"><i class="fa-solid fa-location-arrow"></i> Location</span>' +
+          '</div>' +
+        '</div>';
       }).join('');
     }
 
@@ -669,11 +820,7 @@
       currentDrillState.type = type;
       currentDrillState.scope = scope;
       currentDrillState.targetMR = targetMR || currentOwnerFilterMR;
-      
-      if (!currentDrillState.selectedDate) {
-        currentDrillState.selectedDate = getTodayDateString();
-      }
-      
+      if (!currentDrillState.selectedDate) currentDrillState.selectedDate = getTodayDateString();
       renderPartyWiseDrillModal();
       document.getElementById("universal-details-modal").style.display = "flex";
     }
@@ -697,25 +844,22 @@
       const selectedDate = currentDrillState.selectedDate || getTodayDateString();
       const selectedMonth = selectedDate.substring(0, 7);
 
-      let filtered = (targetMR === "ALL" || !targetMR) ? [].concat(all) : all.filter(function(x) { return x.mrName === targetMR; });
+      let filtered = (targetMR === "ALL" || !targetMR) ? [].concat(all) : all.filter(x => x.mrName === targetMR);
 
       if (scope === 'today') {
-        filtered = filtered.filter(function(x) { return x.dateStr === selectedDate; });
+        filtered = filtered.filter(x => x.dateStr === selectedDate);
       } else {
-        filtered = filtered.filter(function(x) { return x.dateStr && x.dateStr.startsWith(selectedMonth); });
+        filtered = filtered.filter(x => x.dateStr && x.dateStr.startsWith(selectedMonth));
       }
 
-      filtered = filtered.filter(function(x) {
+      filtered = filtered.filter(x => {
         const val = type === 'cash' ? parseFloat(x.cashReceived || 0) : parseFloat(x.pobAmount || 0);
         return val > 0;
       });
 
-      filtered.sort(function(a, b) { return (b.timestamp || 0) - (a.timestamp || 0); });
+      filtered.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
-      const totalSum = filtered.reduce(function(sum, x) {
-        const val = type === 'cash' ? parseFloat(x.cashReceived || 0) : parseFloat(x.pobAmount || 0);
-        return sum + val;
-      }, 0);
+      const totalSum = filtered.reduce((sum, x) => sum + (type === 'cash' ? parseFloat(x.cashReceived || 0) : parseFloat(x.pobAmount || 0)), 0);
 
       const typeLabel = type === 'cash' ? 'Cash Collection' : 'POB Booked';
       const staffLabel = (targetMR === "ALL" || !targetMR) ? 'Company (All Staff)' : targetMR;
@@ -765,13 +909,13 @@
       const today = getTodayDateString();
       const month = getCurrentMonthString();
 
-      const todayCalls = all.filter(function(x) { return x.dateStr === today; });
-      const monthCalls = all.filter(function(x) { return x.dateStr && x.dateStr.startsWith(month); });
+      const todayCalls = all.filter(x => x.dateStr === today);
+      const monthCalls = all.filter(x => x.dateStr && x.dateStr.startsWith(month));
 
-      const cashToday = todayCalls.reduce(function(s, x) { return s + (parseFloat(x.cashReceived) || 0); }, 0);
-      const cashMonth = monthCalls.reduce(function(s, x) { return s + (parseFloat(x.cashReceived) || 0); }, 0);
-      const pobToday = todayCalls.reduce(function(s, x) { return s + (parseFloat(x.pobAmount) || 0); }, 0);
-      const pobMonth = monthCalls.reduce(function(s, x) { return s + (parseFloat(x.pobAmount) || 0); }, 0);
+      const cashToday = todayCalls.reduce((s, x) => s + (parseFloat(x.cashReceived) || 0), 0);
+      const cashMonth = monthCalls.reduce((s, x) => s + (parseFloat(x.cashReceived) || 0), 0);
+      const pobToday = todayCalls.reduce((s, x) => s + (parseFloat(x.pobAmount) || 0), 0);
+      const pobMonth = monthCalls.reduce((s, x) => s + (parseFloat(x.pobAmount) || 0), 0);
 
       document.getElementById("details-modal-title").innerHTML = '<i class="fa-solid fa-building-circle-check" style="color:#0284c7;"></i> Company Performance Details';
       document.getElementById("details-modal-body").innerHTML = '<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">' +
@@ -802,19 +946,18 @@
     function openFYDetailsModal(type) {
       const all = window.cloudTransactions || [];
       const fy = getFinancialYearRange();
-      const list = all.filter(function(x) { return x.dateStr >= fy.s && x.dateStr <= fy.e && (type === 'cash' ? parseFloat(x.cashReceived || 0) > 0 : parseFloat(x.pobAmount || 0) > 0); });
-      const total = list.reduce(function(s, x) { return s + (type === 'cash' ? parseFloat(x.cashReceived || 0) : parseFloat(x.pobAmount || 0)); }, 0);
+      const list = all.filter(x => x.dateStr >= fy.s && x.dateStr <= fy.e && (type === 'cash' ? parseFloat(x.cashReceived || 0) > 0 : parseFloat(x.pobAmount || 0) > 0));
+      const total = list.reduce((s, x) => s + (type === 'cash' ? parseFloat(x.cashReceived || 0) : parseFloat(x.pobAmount || 0)), 0);
 
       document.getElementById("details-modal-title").innerText = (type === 'cash' ? 'Cash Collection' : 'POB Bookings') + ' (' + fy.label + ')';
       document.getElementById("details-modal-body").innerHTML = '<div style="background:#f1f5f9; padding:14px; border-radius:14px; margin-bottom:12px; text-align:center;">' +
         '<div style="font-size:11px; color:#64748b; font-weight:700;">TOTAL FINANCIAL YEAR SUM</div>' +
         '<div style="font-size:24px; font-weight:800; color:#0f172a; margin-top:4px;">₹' + total.toLocaleString('en-IN') + '</div></div>' +
         '<div style="max-height:280px; overflow-y:auto;">' +
-        list.map(function(t) {
-          return '<div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #f1f5f9; font-size:12px;">' +
-            '<div><b>' + t.doctor + '</b><div style="font-size:10px; color:#64748b;">' + t.dateStr + ' | ' + t.mrName + '</div></div>' +
-            '<b style="color:' + (type === 'cash' ? '#b45309' : '#15803d') + ';">₹' + (type === 'cash' ? t.cashReceived : t.pobAmount).toLocaleString('en-IN') + '</b></div>';
-        }).join('') + '</div>';
+        list.map(t => '<div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #f1f5f9; font-size:12px;">' +
+          '<div><b>' + t.doctor + '</b><div style="font-size:10px; color:#64748b;">' + t.dateStr + ' | ' + t.mrName + '</div></div>' +
+          '<b style="color:' + (type === 'cash' ? '#b45309' : '#15803d') + ';">₹' + (type === 'cash' ? t.cashReceived : t.pobAmount).toLocaleString('en-IN') + '</b></div>'
+        ).join('') + '</div>';
       document.getElementById("universal-details-modal").style.display = "flex";
     }
 
@@ -832,13 +975,14 @@
       } else if (type === 'attendance') {
         title.innerText = "Today MR Attendance";
         const staff = window.cloudStaff || [];
-        const all = window.cloudTransactions || [];
-        const today = getTodayDateString();
+        const locs = window.cloudLocations || {};
         body.innerHTML = staff.map(function(s) {
-          const isPresent = all.some(function(t) { return t.mrName === s.name && t.dateStr === today; });
+          const key = s.name ? s.name.replace(/\s+/g, '_') : '';
+          const l = locs[key];
+          const isPresent = l && l.dutyStatus === 'active';
           return '<div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #eee;">' +
-            '<div><b>' + s.name + '</b><div style="font-size:11px; color:#64748b;">' + (s.phone || '') + '</div></div>' +
-            '<b style="color:' + (isPresent ? '#15803d' : '#b91c1c') + ';">' + (isPresent ? 'PRESENT' : 'ABSENT') + '</b></div>';
+            '<div><b>' + s.name + '</b><div style="font-size:11px; color:#64748b;">' + (l && l.lastUpdatedTime ? 'Active: ' + l.lastUpdatedTime : 'No Punch') + '</div></div>' +
+            '<b style="color:' + (isPresent ? '#15803d' : '#b91c1c') + ';">' + (isPresent ? 'PUNCHED-IN' : 'OFFLINE') + '</b></div>';
         }).join('');
       } else if (type === 'products') {
         title.innerText = "Products & Rates Master";
@@ -846,9 +990,7 @@
         body.innerHTML = '<input type="text" id="new-p-name" class="text-input" placeholder="Product Name">' +
           '<input type="number" id="new-p-rate" class="text-input" placeholder="Standard Rate (₹)">' +
           '<button class="btn-main btn-green" style="margin-bottom:12px;" onclick="addNewProd()">Add Product</button>' +
-          pList.map(function(p) {
-            return '<div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #eee;"><span>' + p.name + '</span><b>₹' + p.standardRate + '</b></div>';
-          }).join('');
+          pList.map(p => '<div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #eee;"><span>' + p.name + '</span><b>₹' + p.standardRate + '</b></div>').join('');
       }
     }
 
@@ -876,7 +1018,6 @@
       const map = new Map();
       list.forEach(function(item) {
         const key = ((item.mrName || '').trim()) + '_' + ((item.doctor || '').trim()) + '_' + ((item.dateStr || '').trim()) + '_' + ((item.callTime || '').trim());
-        
         if (!map.has(key)) {
           map.set(key, Object.assign({}, item));
         } else {
@@ -893,31 +1034,30 @@
       return Array.from(map.values());
     }
 
-    // DASHBOARD RENDER WITH SQUARE GREEN CARDS
     function loadOwnerDashboard() {
       const allRaw = window.cloudTransactions || [];
       const fy = getFinancialYearRange();
       const today = getTodayDateString();
       const month = getCurrentMonthString();
 
-      const fyCash = allRaw.filter(function(x) { return x.cashReceived > 0 && x.dateStr >= fy.s && x.dateStr <= fy.e; }).reduce(function(s, x) { return s + parseFloat(x.cashReceived || 0); }, 0);
-      const fyPob = allRaw.filter(function(x) { return x.pobAmount > 0 && x.dateStr >= fy.s && x.dateStr <= fy.e; }).reduce(function(s, x) { return s + parseFloat(x.pobAmount || 0); }, 0);
+      const fyCash = allRaw.filter(x => x.cashReceived > 0 && x.dateStr >= fy.s && x.dateStr <= fy.e).reduce((s, x) => s + parseFloat(x.cashReceived || 0), 0);
+      const fyPob = allRaw.filter(x => x.pobAmount > 0 && x.dateStr >= fy.s && x.dateStr <= fy.e).reduce((s, x) => s + parseFloat(x.pobAmount || 0), 0);
       document.getElementById("owner-fy-cash-sum").innerText = "₹" + fyCash.toLocaleString('en-IN');
       document.getElementById("owner-fy-pob-sum").innerText = "₹" + fyPob.toLocaleString('en-IN');
       document.getElementById("owner-fy-label").innerText = fy.label + " >";
 
-      document.getElementById("comp-cash-today").innerText = "₹" + allRaw.filter(function(x) { return x.dateStr === today; }).reduce(function(s, x) { return s + (parseFloat(x.cashReceived) || 0); }, 0).toLocaleString('en-IN');
-      document.getElementById("comp-cash-month").innerText = "₹" + allRaw.filter(function(x) { return x.dateStr && x.dateStr.startsWith(month); }).reduce(function(s, x) { return s + (parseFloat(x.cashReceived) || 0); }, 0).toLocaleString('en-IN');
-      document.getElementById("comp-pob-today").innerText = "₹" + allRaw.filter(function(x) { return x.dateStr === today; }).reduce(function(s, x) { return s + (parseFloat(x.pobAmount) || 0); }, 0).toLocaleString('en-IN');
-      document.getElementById("comp-pob-month").innerText = "₹" + allRaw.filter(function(x) { return x.dateStr && x.dateStr.startsWith(month); }).reduce(function(s, x) { return s + (parseFloat(x.pobAmount) || 0); }, 0).toLocaleString('en-IN');
+      document.getElementById("comp-cash-today").innerText = "₹" + allRaw.filter(x => x.dateStr === today).reduce((s, x) => s + (parseFloat(x.cashReceived) || 0), 0).toLocaleString('en-IN');
+      document.getElementById("comp-cash-month").innerText = "₹" + allRaw.filter(x => x.dateStr && x.dateStr.startsWith(month)).reduce((s, x) => s + (parseFloat(x.cashReceived) || 0), 0).toLocaleString('en-IN');
+      document.getElementById("comp-pob-today").innerText = "₹" + allRaw.filter(x => x.dateStr === today).reduce((s, x) => s + (parseFloat(x.pobAmount) || 0), 0).toLocaleString('en-IN');
+      document.getElementById("comp-pob-month").innerText = "₹" + allRaw.filter(x => x.dateStr && x.dateStr.startsWith(month)).reduce((s, x) => s + (parseFloat(x.pobAmount) || 0), 0).toLocaleString('en-IN');
 
-      const mrList = currentOwnerFilterMR === "ALL" ? allRaw : allRaw.filter(function(x) { return x.mrName === currentOwnerFilterMR; });
+      const mrList = currentOwnerFilterMR === "ALL" ? allRaw : allRaw.filter(x => x.mrName === currentOwnerFilterMR);
       document.getElementById("active-mr-badge").innerText = currentOwnerFilterMR === "ALL" ? "All Staff" : currentOwnerFilterMR;
 
-      const mrCashToday = mrList.filter(function(x) { return x.dateStr === today; }).reduce(function(s, x) { return s + (parseFloat(x.cashReceived) || 0); }, 0);
-      const mrPobToday = mrList.filter(function(x) { return x.dateStr === today; }).reduce(function(s, x) { return s + (parseFloat(x.pobAmount) || 0); }, 0);
-      const mrCashMonth = mrList.filter(function(x) { return x.dateStr && x.dateStr.startsWith(month); }).reduce(function(s, x) { return s + (parseFloat(x.cashReceived) || 0); }, 0);
-      const mrPobMonth = mrList.filter(function(x) { return x.dateStr && x.dateStr.startsWith(month); }).reduce(function(s, x) { return s + (parseFloat(x.pobAmount) || 0); }, 0);
+      const mrCashToday = mrList.filter(x => x.dateStr === today).reduce((s, x) => s + (parseFloat(x.cashReceived) || 0), 0);
+      const mrPobToday = mrList.filter(x => x.dateStr === today).reduce((s, x) => s + (parseFloat(x.pobAmount) || 0), 0);
+      const mrCashMonth = mrList.filter(x => x.dateStr && x.dateStr.startsWith(month)).reduce((s, x) => s + (parseFloat(x.cashReceived) || 0), 0);
+      const mrPobMonth = mrList.filter(x => x.dateStr && x.dateStr.startsWith(month)).reduce((s, x) => s + (parseFloat(x.pobAmount) || 0), 0);
 
       document.getElementById("mr-box-cash-today").innerText = "₹" + mrCashToday.toLocaleString('en-IN');
       document.getElementById("mr-box-pob-today").innerText = "₹" + mrPobToday.toLocaleString('en-IN');
@@ -926,7 +1066,7 @@
 
       let mergedList = getMergedTransactions(mrList);
 
-      mergedList.sort(function(a, b) {
+      mergedList.sort((a, b) => {
         const timeA = a.timestamp || (a.dateStr ? new Date(a.dateStr + ' ' + (a.callTime || '00:00')).getTime() : 0);
         const timeB = b.timestamp || (b.dateStr ? new Date(b.dateStr + ' ' + (b.callTime || '00:00')).getTime() : 0);
         return timeB - timeA;
@@ -940,7 +1080,6 @@
         const hasPob = parseFloat(t.pobAmount) > 0;
         const hasCash = parseFloat(t.cashReceived) > 0;
 
-        // Auto-fix: 0m to 100m distance is always VERIFIED (Green)
         const dist = parseFloat(t.distanceMeters);
         const isWithinFence = !isNaN(dist) && dist <= 100;
 
@@ -952,7 +1091,6 @@
           verifyBadgeHtml = '<span style="font-size:10.5px; font-weight:800; color:#b91c1c; background:#fee2e2; padding:3px 7px; border-radius:6px; border:1px solid #fca5a5;"><i class="fa-solid fa-triangle-exclamation"></i> Suspected (' + distLabel + ' away)</span>';
         }
 
-        // SQUARE GREEN CARD LAYOUT (MATCHING STAFF DESIGN)
         return '<div class="owner-call-card-square">' +
           '<div style="display:flex; justify-content:space-between; align-items:flex-start;">' +
             '<div>' +
@@ -984,7 +1122,7 @@
       loadOwnerDashboard(); 
     }
 
-    // WAKE LOCK & BACKGROUND RUNNERS
+    // WAKE LOCK TO PREVENT OS SLEEP
     let wakeLock = null;
     async function activateWakeLock() {
       try {
@@ -1008,7 +1146,6 @@
     }
     document.addEventListener('click', keepAppAwake, { once: true });
 
-    // PERIODIC 48-HOUR NOTIFICATION CLEANUP CHECK
     setInterval(updateNotifBadge, 60 * 60 * 1000);
 
     window.addEventListener("DOMContentLoaded", function() {
