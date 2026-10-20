@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Valchem Owner Super Command</title>
+  
+  <meta name="theme-color" content="#0f172a">
+  <meta name="mobile-web-app-capable" content="yes">
+
+  <!-- FONTS & ICONS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- LEAFLET MAP -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- FIREBASE LIBRARIES -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
+  <style>
+    :root { 
+      --primary: #0284c7; 
+      --emerald: #10b981; 
+      --amber: #f59e0b; 
+      --rose: #f43f5e;
+      --purple: #8b5cf6; 
+      --navy: #0b1329; 
+      --bg: #f1f5f9; 
+      --card: #ffffff; 
+      --border: #e2e8f0; 
+      --text: #0f172a; 
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { background: #94a3b8; min-height: 100vh; display: flex; justify-content: center; align-items: flex-start; }
+    .app-screen { width: 100%; max-width: 440px; min-height: 100vh; background: var(--bg); display: flex; flex-direction: column; position: relative; box-shadow: 0 15px 35px rgba(0,0,0,0.2); }
+    
+    /* VIBRANT MODERN NAVBAR */
+    .top-navbar { 
+      background: linear-gradient(135deg, #0b1329 0%, #1e1b4b 100%); 
+      color: white; 
+      padding: 14px 18px; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      position: sticky; 
+      top: 0; 
+      z-index: 50;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    }
+    
+    .dashboard-body { padding: 14px 16px 45px 16px; flex: 1; overflow-y: auto; }
+    .section-card { 
+      background: var(--card); 
+      border-radius: 18px; 
+      padding: 14px; 
+      margin-bottom: 14px; 
+      border: 1.5px solid var(--border); 
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03); 
+    }
+    .card-head { font-size: 13.5px; font-weight: 800; color: var(--text); display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .clickable-box { cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease; }
+    .clickable-box:active { transform: scale(0.97); }
+    
+    .mr-filter-scroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px; scrollbar-width: none; }
+    .mr-pill-btn { 
+      padding: 8px 16px; 
+      border-radius: 20px; 
+      font-size: 11.5px; 
+      font-weight: 700; 
+      border: 1.5px solid var(--border); 
+      background: white; 
+      color: #64748b; 
+      cursor: pointer; 
+      white-space: nowrap; 
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+    .mr-pill-btn.active { 
+      background: linear-gradient(135deg, #0284c7, #2563eb); 
+      color: white; 
+      border-color: #0284c7; 
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+    }
+
+    #pathway-map-container { width: 100%; height: 280px; border-radius: 14px; border: 2px solid #bae6fd; z-index: 1; }
+
+    /* POPUP FLASH BANNER */
+    #activity-flash-banner {
+      position: fixed;
+      top: 65px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-140px);
+      width: calc(100% - 32px);
+      max-width: 408px;
+      background: #0f172a;
+      color: white;
+      padding: 12px 14px;
+      border-radius: 14px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      z-index: 500;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-left: 5px solid #10b981;
+      transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      cursor: pointer;
+    }
+    #activity-flash-banner.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .notif-bell-btn {
+      position: relative;
+      background: rgba(255,255,255,0.15);
+      border: none;
+      color: white;
+      width: 36px;
+      height: 36px;
+      border-radius: 11px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+    }
+    .notif-badge {
+      position: absolute;
+      top: -3px;
+      right: -3px;
+      background: #ef4444;
+      color: white;
+      font-size: 9px;
+      font-weight: 800;
+      border-radius: 50%;
+      min-width: 17px;
+      height: 17px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 3px;
+      border: 2px solid #0f172a;
+      animation: pulseAlert 2s infinite;
+    }
+
+    @keyframes pulseAlert {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.15); }
+      100% { transform: scale(1); }
+    }
+
+    /* COLORFUL CALL CARDS */
+    .owner-call-card-square { 
+      background: #ffffff; 
+      border-radius: 16px; 
+      padding: 14px; 
+      margin-bottom: 12px; 
+      border: 2px solid #10b981; 
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.1);
+      position: relative;
+    }
+
+    /* STOPPAGE BADGES */
+    .badge-yellow-stop {
+      background: #fef3c7;
+      color: #b45309;
+      border: 1.5px solid #f59e0b;
+      padding: 3px 8px;
+      border-radius: 7px;
+      font-size: 10px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .badge-red-stop {
+      background: #fee2e2;
+      color: #b91c1c;
+      border: 1.5px solid #ef4444;
+      padding: 3px 8px;
+      border-radius: 7px;
+      font-size: 10px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      animation: pulseAlert 1.5s infinite;
+    }
+
+    .side-menu-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); z-index: 200; display: none; }
+    .side-drawer { width: 285px; height: 100%; background: white; position: absolute; left: 0; top: 0; display: flex; flex-direction: column; }
+    .drawer-item { padding: 14px 18px; font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 14px; cursor: pointer; color: #334155; }
+    .popup-modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); z-index: 300; display: none; align-items: center; justify-content: center; padding: 16px; }
+    .popup-modal-content { background: white; border-radius: 24px; width: 100%; max-width: 410px; padding: 18px; max-height: 85vh; overflow-y: auto; }
+    .text-input { width: 100%; padding: 11px 13px; border: 1.5px solid var(--border); border-radius: 12px; font-size: 13px; margin-bottom: 10px; outline: none; }
+    .btn-main { width: 100%; padding: 13px; border: none; border-radius: 12px; font-size: 13px; font-weight: 700; color: white; cursor: pointer; }
+    .btn-blue { background: linear-gradient(135deg, #0284c7, #2563eb); }
+    .btn-green { background: linear-gradient(135deg, #10b981, #059669); }
+  </style>
+</head>
+<body>
+
+  <!-- FLASH MESSAGE BANNER -->
+  <div id="activity-flash-banner" onclick="openNotificationsModal()">
+    <div id="flash-banner-icon" style="font-size:18px; color:#10b981;"><i class="fa-solid fa-bell"></i></div>
+    <div style="flex:1;">
+      <div style="font-size:11px; font-weight:800; color:#38bdf8;" id="flash-banner-title">MR Activity</div>
+      <div style="font-size:12.5px; font-weight:600; color:#ffffff;" id="flash-banner-msg">New activity on field</div>
+    </div>
+    <button onclick="event.stopPropagation(); hideFlashBanner()" style="background:none; border:none; color:#94a3b8; font-size:18px; cursor:pointer;">&times;</button>
+  </div>
+
+  <div class="app-screen">
+    <!-- TOP NAVBAR -->
+    <nav class="top-navbar">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <button style="background:rgba(255,255,255,0.12); border:none; color:white; width:38px; height:38px; border-radius:11px; cursor:pointer;" onclick="toggleOwnerSideMenu(true)">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <div>
+          <div style="font-size:15px; font-weight:800; letter-spacing:0.3px;">Valchem Admin</div>
+          <div style="font-size:10.5px; color:#38bdf8; font-weight:600;">Live Command Desk</div>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <button class="notif-bell-btn" onclick="openNotificationsModal()" title="Notifications">
+          <i class="fa-solid fa-bell"></i>
+          <span id="notif-count-badge" class="notif-badge" style="display:none;">0</span>
+        </button>
+        <span id="wake-status-badge" style="font-size:10px; background:rgba(255,255,255,0.12); color:#94a3b8; padding:4px 8px; border-radius:8px; font-weight:700;"><i class="fa-solid fa-bolt"></i> Ready</span>
+        <span style="font-size:11px; background:#10b981; color:white; padding:4px 9px; border-radius:8px; font-weight:800;">Live</span>
+      </div>
+    </nav>
+
+    <div class="dashboard-body">
+
+      <!-- COMPANY PERFORMANCE BOX (COLORFUL GRADIENT) -->
+      <div class="section-card" style="background: linear-gradient(135deg, #090d16 0%, #1e1b4b 50%, #0f172a 100%); color:white; border:none; box-shadow:0 8px 20px rgba(15,23,42,0.25);">
+        <div class="card-head" style="color:#38bdf8; margin-bottom:12px;">
+          <span><i class="fa-solid fa-building-circle-check"></i> Performance Matrix</span>
+          <span class="clickable-box" onclick="openCompanyPerformanceModal()" style="font-size:10.5px; color:#38bdf8; font-weight:700; background:rgba(255,255,255,0.1); padding:4px 9px; border-radius:8px;">Summary &rarr;</span>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:9px; margin-bottom:9px;">
+          <div class="clickable-box" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(5, 150, 105, 0.4)); border:1.5px solid #10b981; padding:12px; border-radius:14px;" onclick="openFYDetailsModal('cash')">
+            <div style="font-size:9.5px; font-weight:800; color:#86efac; text-transform:uppercase;">Cash Collected (FY)</div>
+            <div style="font-size:18px; font-weight:800; color:#4ade80; margin-top:2px;" id="owner-fy-cash-sum">₹0</div>
+            <div style="font-size:9.5px; color:#bbf7d0;" id="owner-fy-label">This FY &rarr;</div>
+          </div>
+          <div class="clickable-box" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(217, 119, 6, 0.4)); border:1.5px solid #f59e0b; padding:12px; border-radius:14px;" onclick="openFYDetailsModal('pob')">
+            <div style="font-size:9.5px; font-weight:800; color:#fde68a; text-transform:uppercase;">POB Booked (FY)</div>
+            <div style="font-size:18px; font-weight:800; color:#fbbf24; margin-top:2px;" id="owner-fy-pob-sum">₹0</div>
+            <div style="font-size:9.5px; color:#fef3c7;">Full FY &rarr;</div>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+          <div class="clickable-box" onclick="openPartyWiseDrilldown('cash', 'today', 'ALL')" style="background:rgba(255,255,255,0.06); padding:10px; border-radius:12px; border:1px solid rgba(255,255,255,0.08);">
+            <div style="font-size:9px; color:#cbd5e1; font-weight:700;">COLLECTION TODAY</div>
+            <div style="font-size:16px; font-weight:800; color:#fde047; margin-top:2px;" id="comp-cash-today">₹0</div>
+            <div style="font-size:8.5px; color:#94a3b8; margin-top:2px;">Party List &rarr;</div>
+          </div>
+          <div class="clickable-box" onclick="openPartyWiseDrilldown('cash', 'month', 'ALL')" style="background:rgba(255,255,255,0.06); padding:10px; border-radius:12px; border:1px solid rgba(255,255,255,0.08);">
+            <div style="font-size:9px; color:#cbd5e1; font-weight:700;">COLLECTION MONTH</div>
+            <div style="font-size:16px; font-weight:800; color:#facc15; margin-top:2px;" id="comp-cash-month">₹0</div>
+            <div style="font-size:8.5px; color:#94a3b8; margin-top:2px;">Party List &rarr;</div>
+          </div>
+          <div class="clickable-box" onclick="openPartyWiseDrilldown('pob', 'today', 'ALL')" style="background:rgba(255,255,255,0.06); padding:10px; border-radius:12px; border:1px solid rgba(255,255,255,0.08);">
+            <div style="font-size:9px; color:#cbd5e1; font-weight:700;">POB TODAY</div>
+            <div style="font-size:16px; font-weight:800; color:#4ade80; margin-top:2px;" id="comp-pob-today">₹0</div>
+            <div style="font-size:8.5px; color:#94a3b8; margin-top:2px;">Party List &rarr;</div>
+          </div>
+          <div class="clickable-box" onclick="openPartyWiseDrilldown('pob', 'month', 'ALL')" style="background:rgba(255,255,255,0.06); padding:10px; border-radius:12px; border:1px solid rgba(255,255,255,0.08);">
+            <div style="font-size:9px; color:#cbd5e1; font-weight:700;">POB MONTH</div>
+            <div style="font-size:16px; font-weight:800; color:#22c55e; margin-top:2px;" id="comp-pob-month">₹0</div>
+            <div style="font-size:8.5px; color:#94a3b8; margin-top:2px;">Party List &rarr;</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FILTER BY STAFF BAR -->
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+        <span style="font-size:12px; font-weight:800; color:#475569;"><i class="fa-solid fa-filter" style="color:#0284c7;"></i> Select Field Staff:</span>
+      </div>
+      <div class="mr-filter-scroll" id="owner-mr-filters-bar-top"></div>
+
+      <!-- DEDICATED MR PERFORMANCE BOX -->
+      <div class="section-card" style="background:#ffffff; border:2px solid #0284c7;">
+        <div class="card-head" style="margin-bottom:10px;">
+          <span style="display:flex; align-items:center; gap:6px;">
+            <i class="fa-solid fa-user-tie" style="color:#0284c7;"></i>
+            <span style="font-weight:800; color:#0f172a;">MR Performance Stats</span>
+          </span>
+          <span id="active-mr-badge" style="font-size:11px; background:#e0f2fe; color:#0284c7; padding:4px 9px; border-radius:8px; font-weight:800;">
+            All Staff
+          </span>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+          <div class="clickable-box" onclick="openPartyWiseDrilldown('cash', 'today', currentOwnerFilterMR)" style="background:#fffbeb; border:1.5px solid #fde68a; padding:10px; border-radius:12px;">
+            <div style="font-size:9px; font-weight:800; color:#92400e; text-transform:uppercase;">Cash Today</div>
+            <div style="font-size:16px; font-weight:800; color:#b45309; margin-top:2px;" id="mr-box-cash-today">₹0</div>
+            <div style="font-size:9px; color:#d97706; margin-top:2px;">View List &rarr;</div>
+          </div>
+
+          <div class="clickable-box" onclick="openPartyWiseDrilldown('pob', 'today', currentOwnerFilterMR)" style="background:#f0fdf4; border:1.5px solid #bbf7d0; padding:10px; border-radius:12px;">
+            <div style="font-size:9px; font-weight:800; color:#166534; text-transform:uppercase;">POB Today</div>
+            <div style="font-size:16px; font-weight:800; color:#15803d; margin-top:2px;" id="mr-box-pob-today">₹0</div>
+            <div style="font-size:9px; color:#16a34a; margin-top:2px;">View List &rarr;</div>
+          </div>
+
+          <div class="clickable-box" onclick="openPartyWiseDrilldown('cash', 'month', currentOwnerFilterMR)" style="background:#fef3c7; border:1.5px solid #fcd34d; padding:10px; border-radius:12px;">
+            <div style="font-size:9px; font-weight:800; color:#78350f; text-transform:uppercase;">Cash Month</div>
+            <div style="font-size:16px; font-weight:800; color:#92400e; margin-top:2px;" id="mr-box-cash-month">₹0</div>
+            <div style="font-size:9px; color:#b45309; margin-top:2px;">View List &rarr;</div>
+          </div>
+
+          <div class="clickable-box" onclick="openPartyWiseDrilldown('pob', 'month', currentOwnerFilterMR)" style="background:#ecfdf5; border:1.5px solid #a7f3d0; padding:10px; border-radius:12px;">
+            <div style="font-size:9px; font-weight:800; color:#065f46; text-transform:uppercase;">POB Month</div>
+            <div style="font-size:16px; font-weight:800; color:#059669; margin-top:2px;" id="mr-box-pob-month">₹0</div>
+            <div style="font-size:9px; color:#059669; margin-top:2px;">View List &rarr;</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BREADCRUMB TRAIL MAP -->
+      <div class="section-card" style="background:#f0f9ff; border:2px solid #7dd3fc;">
+        <div class="card-head" style="color:#0369a1; margin-bottom:8px;">
+          <span><i class="fa-solid fa-route" style="color:#0284c7;"></i> Live Breadcrumb Trail</span>
+          <span style="font-size:10px; background:#0284c7; color:white; padding:3px 9px; border-radius:8px; font-weight:800;" id="pathway-mr-tag">All Visits</span>
+        </div>
+        <div id="pathway-map-container"></div>
+      </div>
+
+      <!-- FIELD STAFF WITH 30M / 1HR STOPPAGE BADGES -->
+      <div class="section-card" style="background:#ffffff; border:1.5px solid #cbd5e1;">
+        <div class="card-head" style="color:#0f172a; margin-bottom:10px;">
+          <span><i class="fa-solid fa-users" style="color:#0284c7;"></i> Field Staff Tracking & Stoppage</span>
+        </div>
+        <div id="live-mr-tracking-stream"></div>
+      </div>
+
+      <!-- CALLS STREAM (SQUARE GREEN CARDS) -->
+      <div class="section-card">
+        <div class="card-head">
+          <span>Doctor Calls & Visits</span>
+          <span style="font-size:11px; background:#e0f2fe; color:#0284c7; padding:3px 9px; border-radius:8px; font-weight:800;" id="owner-filtered-count">0 Records</span>
+        </div>
+        <div id="owner-records-stream"></div>
+      </div>
+    </div>
+
+    <!-- SIDE DRAWER MENU -->
+    <div id="owner-side-menu" class="side-menu-overlay" onclick="toggleOwnerSideMenu(false)">
+      <div class="side-drawer" onclick="event.stopPropagation()">
+        <div style="background:linear-gradient(135deg, #0b1329, #1e1b4b); color:white; padding:26px 18px;">
+          <div style="font-size:17px; font-weight:800;">Valchem Admin</div>
+          <div style="font-size:11px; color:#38bdf8;">Super Control Desk</div>
+        </div>
+        <div style="padding:14px; flex:1;">
+          <div class="drawer-item" onclick="toggleOwnerSideMenu(false)"><i class="fa-solid fa-chart-pie" style="color:var(--primary);"></i> Dashboard Home</div>
+          <div class="drawer-item" onclick="openDrawerModal('add_mr')"><i class="fa-solid fa-user-plus" style="color:var(--primary);"></i> Add New MR & PIN</div>
+          <div class="drawer-item" onclick="openDrawerModal('attendance')"><i class="fa-solid fa-clipboard-user" style="color:#10b981;"></i> Today MR Attendance</div>
+          <div class="drawer-item" onclick="openDrawerModal('products')"><i class="fa-solid fa-boxes-stacked" style="color:#f59e0b;"></i> Product & Rates Master</div>
+          <div class="drawer-item" onclick="toggleOwnerSideMenu(false); openNotificationsModal();"><i class="fa-solid fa-bell" style="color:#38bdf8;"></i> Notifications History</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- UNIVERSAL MODAL -->
+    <div id="universal-details-modal" class="popup-modal-overlay">
+      <div class="popup-modal-content">
+        <div style="display:flex; justify-content:space-between; margin-bottom:12px; align-items:center;">
+          <b style="font-size:15px; color:#0f172a;" id="details-modal-title">Details View</b>
+          <button onclick="closeDetailsModal()" style="border:none; background:#fee2e2; color:red; border-radius:50%; width:28px; height:28px; font-weight:800; cursor:pointer;">&times;</button>
+        </div>
+        <div id="details-modal-body"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBZ0MhnKjmarEpw8kqPZF00LLDCFlAewDo",
+      authDomain: "ffms-723c1.firebaseapp.com",
+      projectId: "ffms-723c1",
+      storageBucket: "ffms-723c1.firebasestorage.app",
+      messagingSenderId: "851436685685",
+      appId: "1:851436685685:web:67e2753bdf672b864beb3c",
+      databaseURL: "https://ffms-723c1-default-rtdb.asia-southeast1.firebasedatabase.app"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    let currentOwnerFilterMR = "ALL";
+    let pathwayMap = null;
+    let pathwayPolyline = null;
+    let pathwayMarkers = [];
+    let flashTimer = null;
+
+    let currentDrillState = {
+      type: 'cash',
+      scope: 'today',
+      targetMR: 'ALL',
+      selectedDate: ''
+    };
+
+    window.cloudStaff = [];
+    window.cloudTransactions = [];
+    window.cloudLocations = {};
+    window.cloudBreadcrumbs = {};
+    window.cloudProducts = [];
+
+    // 48-HOUR PERSISTENT NOTIFICATION ENGINE
+    const TWO_DAYS_MS = 2 * 24 * 60 * 60 * 1000;
+
+    function getCleanStoredNotifications() {
+      try {
+        const raw = localStorage.getItem("valchem_owner_notifications");
+        let list = raw ? JSON.parse(raw) : [];
+        const now = Date.now();
+        list = list.filter(item => (now - (item.createdAt || 0)) <= TWO_DAYS_MS);
+        localStorage.setItem("valchem_owner_notifications", JSON.stringify(list));
+        return list;
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveNotificationToStore(notifItem) {
+      notifItem.createdAt = Date.now();
+      let list = getCleanStoredNotifications();
+      list.unshift(notifItem);
+      if (list.length > 200) list = list.slice(0, 200);
+      localStorage.setItem("valchem_owner_notifications", JSON.stringify(list));
+      updateNotifBadge();
+    }
+
+    function updateNotifBadge() {
+      const badge = document.getElementById('notif-count-badge');
+      const list = getCleanStoredNotifications();
+      if (list.length > 0) {
+        badge.style.display = 'flex';
+        badge.innerText = list.length > 99 ? '99+' : list.length;
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+
+    function showFlashBanner(title, msg, type) {
+      const banner = document.getElementById('activity-flash-banner');
+      const titleEl = document.getElementById('flash-banner-title');
+      const msgEl = document.getElementById('flash-banner-msg');
+      const iconEl = document.getElementById('flash-banner-icon');
+
+      titleEl.innerText = title;
+      msgEl.innerText = msg;
+
+      saveNotificationToStore({
+        title: title,
+        msg: msg,
+        type: type,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        date: getTodayDateString()
+      });
+
+      if (type === 'pob') {
+        banner.style.borderLeftColor = '#10b981';
+        iconEl.innerHTML = '<i class="fa-solid fa-cart-shopping" style="color:#10b981;"></i>';
+      } else if (type === 'cash') {
+        banner.style.borderLeftColor = '#f59e0b';
+        iconEl.innerHTML = '<i class="fa-solid fa-indian-rupee-sign" style="color:#f59e0b;"></i>';
+      } else if (type === 'punch_in') {
+        banner.style.borderLeftColor = '#10b981';
+        iconEl.innerHTML = '<i class="fa-solid fa-right-to-bracket" style="color:#10b981;"></i>';
+      } else if (type === 'punch_out') {
+        banner.style.borderLeftColor = '#ef4444';
+        iconEl.innerHTML = '<i class="fa-solid fa-right-from-bracket" style="color:#ef4444;"></i>';
+      } else if (type === 'stop_yellow') {
+        banner.style.borderLeftColor = '#f59e0b';
+        iconEl.innerHTML = '<i class="fa-solid fa-triangle-exclamation" style="color:#f59e0b;"></i>';
+      } else if (type === 'stop_red') {
+        banner.style.borderLeftColor = '#ef4444';
+        iconEl.innerHTML = '<i class="fa-solid fa-circle-exclamation" style="color:#ef4444;"></i>';
+      } else {
+        banner.style.borderLeftColor = '#0284c7';
+        iconEl.innerHTML = '<i class="fa-solid fa-user-doctor" style="color:#0284c7;"></i>';
+      }
+
+      banner.classList.add('show');
+      if (flashTimer) clearTimeout(flashTimer);
+      flashTimer = setTimeout(hideFlashBanner, 8000);
+    }
+
+    function hideFlashBanner() {
+      const banner = document.getElementById('activity-flash-banner');
+      if (banner) banner.classList.remove('show');
+    }
+
+    function openNotificationsModal() {
+      hideFlashBanner();
+      const list = getCleanStoredNotifications();
+      const title = document.getElementById("details-modal-title");
+      const body = document.getElementById("details-modal-body");
+      
+      title.innerHTML = '<i class="fa-solid fa-bell" style="color:#0284c7;"></i> Notifications Log (' + list.length + ')';
+      
+      if (list.length === 0) {
+        body.innerHTML = '<div style="text-align:center; padding:32px 10px; color:#94a3b8;"><i class="fa-regular fa-bell-slash" style="font-size:34px; margin-bottom:8px; display:block;"></i><span style="font-size:13px; font-weight:600;">No activity in last 48 hours</span></div>';
+      } else {
+        body.innerHTML = '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding-bottom:6px; border-bottom:1px solid #f1f5f9;"><span style="font-size:11px; color:#64748b; font-weight:800;">SAVED NOTIFICATIONS (48H AUTO-EXPIRE)</span><button onclick="clearAllNotifications()" style="background:#fee2e2; border:none; color:#dc2626; font-size:10px; font-weight:800; padding:4px 9px; border-radius:6px; cursor:pointer;">Clear All</button></div><div style="max-height:380px; overflow-y:auto;">' +
+          list.map(function(n) {
+            let iconClass = 'fa-user-doctor';
+            let iconColor = '#0284c7';
+
+            if (n.type === 'pob') { iconClass = 'fa-cart-shopping'; iconColor = '#10b981'; }
+            else if (n.type === 'cash') { iconClass = 'fa-indian-rupee-sign'; iconColor = '#f59e0b'; }
+            else if (n.type === 'punch_in') { iconClass = 'fa-right-to-bracket'; iconColor = '#10b981'; }
+            else if (n.type === 'punch_out') { iconClass = 'fa-right-from-bracket'; iconColor = '#ef4444'; }
+            else if (n.type === 'stop_yellow') { iconClass = 'fa-triangle-exclamation'; iconColor = '#f59e0b'; }
+            else if (n.type === 'stop_red') { iconClass = 'fa-circle-exclamation'; iconColor = '#ef4444'; }
+
+            return '<div style="display:flex; gap:12px; align-items:flex-start; padding:11px 12px; border-radius:12px; background:#f8fafc; border:1px solid #e2e8f0; margin-bottom:8px;">' +
+              '<div style="font-size:16px; margin-top:2px; color:' + iconColor + ';"><i class="fa-solid ' + iconClass + '"></i></div>' +
+              '<div style="flex:1;"><div style="display:flex; justify-content:space-between; align-items:center;"><b style="font-size:12.5px; color:#0f172a;">' + n.title + '</b><span style="font-size:10px; color:#94a3b8;">' + n.time + '</span></div>' +
+              '<div style="font-size:11.5px; color:#475569; margin-top:3px;">' + n.msg + '</div>' +
+              '<div style="font-size:9.5px; color:#94a3b8; margin-top:2px;"><i class="fa-regular fa-calendar"></i> ' + (n.date || '') + '</div></div></div>';
+          }).join('') + '</div>';
+      }
+      document.getElementById("universal-details-modal").style.display = "flex";
+    }
+
+    function clearAllNotifications() {
+      localStorage.removeItem("valchem_owner_notifications");
+      updateNotifBadge();
+      openNotificationsModal();
+    }
+
+    // HAVERSINE FORMULA FOR 100M STOPPAGE DISTANCE
+    function calculateDistanceMeters(lat1, lon1, lat2, lon2) {
+      if (!lat1 || !lon1 || !lat2 || !lon2) return 9999;
+      const R = 6371e3;
+      const phi1 = lat1 * Math.PI / 180;
+      const phi2 = lat2 * Math.PI / 180;
+      const deltaPhi = (lat2 - lat1) * Math.PI / 180;
+      const deltaLambda = (lon2 - lon1) * Math.PI / 180;
+
+      const a = Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
+                Math.cos(phi1) * Math.cos(phi2) *
+                Math.sin(deltaLambda / 2) * Math.sin(deltaLambda / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c;
+    }
+
+    // DATE HELPERS
+    function getTodayDateString() {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+    function getCurrentMonthString() {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    }
+    function getFinancialYearRange() {
+      const now = new Date(), y = now.getFullYear(), m = now.getMonth() + 1;
+      return m >= 4 ? { s: y + '-04-01', e: (y+1) + '-03-31', label: 'FY ' + y + '-' + String(y+1).slice(-2) } : { s: (y-1) + '-04-01', e: y + '-03-31', label: 'FY ' + (y-1) + '-' + String(y).slice(-2) };
+    }
+
+    function toggleOwnerSideMenu(show) { document.getElementById("owner-side-menu").style.display = show ? "block" : "none"; }
+    function closeDetailsModal() { document.getElementById("universal-details-modal").style.display = "none"; }
+
+    function initPathwayMap() {
+      if (typeof L === 'undefined') return;
+      if (!pathwayMap) {
+        pathwayMap = L.map('pathway-map-container', { zoomControl: false }).setView([27.1767, 78.0081], 12);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© OSM' }).addTo(pathwayMap);
+      }
+    }
+
+    // BREADCRUMB TRAIL WITH GRADIENT ROUTE & NUMBERED PINS
+    function updateMRPathway(calls) {
+      initPathwayMap();
+      if (!pathwayMap) return;
+
+      if (pathwayPolyline) pathwayMap.removeLayer(pathwayPolyline);
+      pathwayMarkers.forEach(function(m) { pathwayMap.removeLayer(m); });
+      pathwayMarkers = [];
+
+      let points = [];
+
+      // Check if breadcrumbs are present for selected MR
+      if (currentOwnerFilterMR !== "ALL") {
+        const staffKey = currentOwnerFilterMR.replace(/\s+/g, '_');
+        const trailPoints = (window.cloudBreadcrumbs || {})[staffKey] || [];
+        if (trailPoints.length > 0) {
+          points = trailPoints.map(p => ({ lat: p.lat, lng: p.lng, label: p.time || 'Route Point', isTrail: true }));
+        }
+      }
+
+      // If no continuous trail points, use visited doctor locations
+      if (points.length === 0) {
+        const validCalls = (calls || [])
+          .filter(c => c.lat && c.lng && !isNaN(parseFloat(c.lat)) && !isNaN(parseFloat(c.lng)))
+          .sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+
+        points = validCalls.map((c, i) => ({ lat: parseFloat(c.lat), lng: parseFloat(c.lng), label: '#' + (i + 1) + ': ' + c.doctor + ' (' + (c.callTime || '') + ')' }));
+      }
+
+      if (points.length === 0) return;
+
+      const latLngs = points.map(p => [p.lat, p.lng]);
+
+      pathwayPolyline = L.polyline(latLngs, {
+        color: '#2563eb',
+        weight: 4,
+        opacity: 0.85,
+        smoothFactor: 1
+      }).addTo(pathwayMap);
+
+      points.forEach(function(p, index) {
+        const isStart = index === 0;
+        const isLatest = index === points.length - 1;
+        const pinColor = isStart ? '#10b981' : (isLatest ? '#ef4444' : '#0284c7');
+
+        const marker = L.circleMarker([p.lat, p.lng], {
+          radius: isLatest ? 8 : (isStart ? 7 : 5),
+          fillColor: pinColor,
+          color: '#ffffff',
+          weight: 2,
+          opacity: 1,
+          fillOpacity: 0.95
+        }).addTo(pathwayMap).bindPopup('<b>' + p.label + '</b>');
+
+        pathwayMarkers.push(marker);
+      });
+
+      pathwayMap.fitBounds(pathwayPolyline.getBounds(), { padding: [20, 20] });
+    }
+
+    // FULL FIREBASE REALTIME LISTENERS
+    function listenToCloudData() {
+      // 1. STAFF MASTER LISTENER
+      db.ref("staff").on("value", function(snapshot) {
+        const val = snapshot.val();
+        if (val) {
+          window.cloudStaff = Object.values(val);
+        } else {
+          window.cloudStaff = [
+            { name: "Rahul Sharma", phone: "9876543210" },
+            { name: "Amit Verma", phone: "9811223344" }
+          ];
+        }
+        renderFilterBar();
+        renderLiveLocations();
+      });
+
+      // 2. CALLS & TRANSACTIONS LISTENER
+      let initialTxLoad = true;
+      db.ref("transactions").on("value", function(snapshot) {
+        const val = snapshot.val();
+        window.cloudTransactions = val ? Object.values(val) : [];
+        loadOwnerDashboard();
+      });
+
+      db.ref("transactions").on("child_added", function(snapshot) {
+        if (initialTxLoad) return;
+        const latest = snapshot.val();
+        if (!latest) return;
+
+        const hasPob = parseFloat(latest.pobAmount) > 0;
+        const hasCash = parseFloat(latest.cashReceived) > 0;
+
+        if (hasPob && hasCash) {
+          showFlashBanner('POB & Cash: ' + latest.mrName, 'POB: ₹' + latest.pobAmount + ' | Cash: ₹' + latest.cashReceived + ' at Dr. ' + latest.doctor, 'pob');
+        } else if (hasPob) {
+          showFlashBanner('POB Booked: ' + latest.mrName, '₹' + latest.pobAmount + ' booked at Dr. ' + latest.doctor, 'pob');
+        } else if (hasCash) {
+          showFlashBanner('Cash Received: ' + latest.mrName, '₹' + latest.cashReceived + ' collected from Dr. ' + latest.doctor, 'cash');
+        } else {
+          showFlashBanner('Doctor Visited: ' + latest.mrName, 'Dr. ' + latest.doctor + ' (' + (latest.area || 'Field') + ')', 'call');
+        }
+      });
+      setTimeout(() => { initialTxLoad = false; }, 3000);
+
+      // 3. LIVE GPS & 100M STOPPAGE LISTENER (30 MIN YELLOW / 60 MIN RED)
+      let initialLocLoad = true;
+      let prevStaffState = {};
+
+      db.ref("mr_live_locations").on("value", function(snapshot) {
+        const val = snapshot.val() || {};
+        window.cloudLocations = val;
+
+        const now = Date.now();
+
+        Object.keys(val).forEach(function(key) {
+          const cur = val[key];
+          const staffName = cur.mrName || key.replace(/_/g, ' ');
+          const prev = prevStaffState[key];
+
+          // PUNCH IN / OUT DETECTION
+          if (!initialLocLoad && prev) {
+            if (prev.dutyStatus !== cur.dutyStatus) {
+              if (cur.dutyStatus === 'active') {
+                showFlashBanner('Punch-In: ' + staffName, staffName + ' ne duty start ki at ' + (cur.lastUpdatedTime || ''), 'punch_in');
+              } else if (cur.dutyStatus === 'offline') {
+                showFlashBanner('Punch-Out: ' + staffName, staffName + ' ne duty stop/punch-out kiya', 'punch_out');
+              }
+            }
+          }
+
+          // STOPPAGE CALCULATION (100 METERS RADIUS)
+          if (cur.lat && cur.lng) {
+            let stayDurationMinutes = 0;
+            
+            if (cur.stayStartTime) {
+              stayDurationMinutes = Math.floor((now - cur.stayStartTime) / (60 * 1000));
+            } else if (prev && prev.lat && prev.lng) {
+              const dist = calculateDistanceMeters(prev.lat, prev.lng, cur.lat, cur.lng);
+              if (dist <= 100) {
+                stayDurationMinutes = prev.stayMinutes ? prev.stayMinutes + 5 : 5;
+              }
+            }
+
+            cur.stayMinutes = stayDurationMinutes;
+
+            // Trigger Yellow & Red Alerts
+            if (!initialLocLoad) {
+              if (stayDurationMinutes >= 60 && (!prev || prev.stayMinutes < 60)) {
+                showFlashBanner('🚨 Red Alert Stoppage (1 Hr): ' + staffName, staffName + ' pichhle 1 ghante se 100m ke dayre mein ruke hue hain!', 'stop_red');
+              } else if (stayDurationMinutes >= 30 && (!prev || prev.stayMinutes < 30)) {
+                showFlashBanner('⚠️ Stoppage Alert (30m): ' + staffName, staffName + ' pichhle 30 minute se ek hi sthan par hain (Doctor Meeting/Waiting).', 'stop_yellow');
+              }
+            }
+          }
+
+          prevStaffState[key] = Object.assign({}, cur);
+        });
+
+        initialLocLoad = false;
+        renderLiveLocations();
+      });
+
+      // 4. BREADCRUMB ROUTE HISTORY LISTENER
+      const todayStr = getTodayDateString();
+      db.ref("staff_routes/" + todayStr).on("value", function(snapshot) {
+        window.cloudBreadcrumbs = snapshot.val() || {};
+        if (currentOwnerFilterMR !== "ALL") {
+          loadOwnerDashboard();
+        }
+      });
+
+      // 5. PRODUCTS
+      db.ref("products").on("value", function(snapshot) {
+        const val = snapshot.val();
+        window.cloudProducts = val ? Object.values(val) : [];
+      });
+    }
+
+    function renderFilterBar() {
+      const staff = window.cloudStaff || [];
+      const filterHtml = '<button class="mr-pill-btn ' + (currentOwnerFilterMR === 'ALL' ? 'active' : '') + '" onclick="setOwnerFilter(\'ALL\')">All Staff</button>' + staff.map(function(s) {
+        return '<button class="mr-pill-btn ' + (currentOwnerFilterMR === s.name ? 'active' : '') + '" onclick="setOwnerFilter(\'' + s.name + '\')">' + s.name + '</button>';
+      }).join('');
+
+      const topBar = document.getElementById("owner-mr-filters-bar-top");
+      if (topBar) topBar.innerHTML = filterHtml;
+    }
+
+    function handleStaffClick(mrName) {
+      setOwnerFilter(mrName);
+      const key = mrName ? mrName.replace(/\s+/g, '_') : '';
+      const loc = (window.cloudLocations || {})[key];
+      if (loc && loc.lat && loc.lng) {
+        window.open('https://www.google.com/maps?q=' + loc.lat + ',' + loc.lng, '_blank');
+      } else {
+        alert(mrName + ' ki live GPS location abhi offline hai.');
+      }
+    }
+
+    // RENDER FIELD STAFF WITH STOPPAGE STATUS (30 MIN YELLOW & 1 HR RED)
+    function renderLiveLocations() {
+      const staff = window.cloudStaff || [];
+      const locs = window.cloudLocations || {};
+      
+      document.getElementById("live-mr-tracking-stream").innerHTML = staff.map(function(s) {
+        const key = s.name ? s.name.replace(/\s+/g, '_') : '';
+        const l = locs[key];
+        const isSelected = currentOwnerFilterMR === s.name;
+        
+        const stayMin = l ? (l.stayMinutes || 0) : 0;
+        let stoppageBadgeHtml = '';
+
+        if (stayMin >= 60) {
+          stoppageBadgeHtml = '<span class="badge-red-stop"><i class="fa-solid fa-circle-exclamation"></i> Stoppage: ' + stayMin + 'm (1h+ Alert)</span>';
+        } else if (stayMin >= 30) {
+          stoppageBadgeHtml = '<span class="badge-yellow-stop"><i class="fa-solid fa-triangle-exclamation"></i> Stoppage: ' + stayMin + 'm (Wait)</span>';
+        } else if (l && l.lat) {
+          stoppageBadgeHtml = '<span style="font-size:10px; font-weight:700; color:#10b981; background:#ecfdf5; padding:2px 7px; border-radius:6px; border:1px solid #a7f3d0;"><i class="fa-solid fa-person-walking"></i> Moving / Active</span>';
+        }
+
+        return '<div class="clickable-box" onclick="handleStaffClick(\'' + s.name + '\')" style="display:flex; justify-content:space-between; align-items:center; background:' + (isSelected ? '#e0f2fe' : '#ffffff') + '; padding:12px 14px; border-radius:14px; margin-bottom:9px; border:1.5px solid ' + (isSelected ? '#0284c7' : '#e2e8f0') + '; box-shadow:0 2px 6px rgba(0,0,0,0.02);">' +
+          '<div>' +
+            '<div style="font-size:14px; font-weight:800; color:#0f172a; display:flex; align-items:center; gap:6px;">' +
+              '<span>' + s.name + '</span>' +
+              '<i class="fa-solid fa-location-crosshairs" style="font-size:12px; color:#0284c7;"></i>' +
+            '</div>' +
+            '<div style="font-size:10.5px; color:#64748b; margin-top:2px;">' + (l ? 'GPS: ' + (l.lastUpdatedTime || 'Active') : 'Offline / In Field') + '</div>' +
+            '<div style="margin-top:5px;">' + stoppageBadgeHtml + '</div>' +
+          '</div>' +
+          '<div style="display:flex; gap:6px; align-items:center;">' +
+            '<span style="font-size:11.5px; font-weight:700; color:' + (l ? '#0284c7' : '#94a3b8') + '; background:#f8fafc; border:1.5px solid #cbd5e1; padding:6px 11px; border-radius:10px;"><i class="fa-solid fa-location-arrow"></i> Location</span>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    function openPartyWiseDrilldown(type, scope, targetMR) {
+      currentDrillState.type = type;
+      currentDrillState.scope = scope;
+      currentDrillState.targetMR = targetMR || currentOwnerFilterMR;
+      if (!currentDrillState.selectedDate) currentDrillState.selectedDate = getTodayDateString();
+      renderPartyWiseDrillModal();
+      document.getElementById("universal-details-modal").style.display = "flex";
+    }
+
+    function updateDrillDate(newDate) {
+      if (!newDate) return;
+      currentDrillState.selectedDate = newDate;
+      renderPartyWiseDrillModal();
+    }
+
+    function switchDrillScope(newScope) {
+      currentDrillState.scope = newScope;
+      renderPartyWiseDrillModal();
+    }
+
+    function renderPartyWiseDrillModal() {
+      const all = window.cloudTransactions || [];
+      const type = currentDrillState.type;
+      const scope = currentDrillState.scope;
+      const targetMR = currentDrillState.targetMR;
+      const selectedDate = currentDrillState.selectedDate || getTodayDateString();
+      const selectedMonth = selectedDate.substring(0, 7);
+
+      let filtered = (targetMR === "ALL" || !targetMR) ? [].concat(all) : all.filter(x => x.mrName === targetMR);
+
+      if (scope === 'today') {
+        filtered = filtered.filter(x => x.dateStr === selectedDate);
+      } else {
+        filtered = filtered.filter(x => x.dateStr && x.dateStr.startsWith(selectedMonth));
+      }
+
+      filtered = filtered.filter(x => {
+        const val = type === 'cash' ? parseFloat(x.cashReceived || 0) : parseFloat(x.pobAmount || 0);
+        return val > 0;
+      });
+
+      filtered.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+      const totalSum = filtered.reduce((sum, x) => sum + (type === 'cash' ? parseFloat(x.cashReceived || 0) : parseFloat(x.pobAmount || 0)), 0);
+
+      const typeLabel = type === 'cash' ? 'Cash Collection' : 'POB Booked';
+      const staffLabel = (targetMR === "ALL" || !targetMR) ? 'Company (All Staff)' : targetMR;
+      const themeColor = type === 'cash' ? '#b45309' : '#15803d';
+      const themeBg = type === 'cash' ? '#fffbeb' : '#f0fdf4';
+      const themeBorder = type === 'cash' ? '#fde68a' : '#bbf7d0';
+
+      const titleEl = document.getElementById("details-modal-title");
+      const bodyEl = document.getElementById("details-modal-body");
+
+      titleEl.innerHTML = '<span style="display:flex; align-items:center; gap:6px;"><i class="fa-solid ' + (type === 'cash' ? 'fa-indian-rupee-sign' : 'fa-cart-shopping') + '" style="color:' + (type === 'cash' ? '#f59e0b' : '#10b981') + ';"></i><span>' + typeLabel + ' (' + staffLabel + ')</span></span>';
+
+      let itemsHtml = '';
+      if (filtered.length === 0) {
+        itemsHtml = '<div style="text-align:center; padding:24px 10px; color:#94a3b8;"><i class="fa-regular fa-folder-open" style="font-size:26px; margin-bottom:6px; display:block;"></i><span style="font-size:12px;">Is date/month par koi record nahi mila</span></div>';
+      } else {
+        itemsHtml = filtered.map(function(item, idx) {
+          const amount = type === 'cash' ? parseFloat(item.cashReceived || 0) : parseFloat(item.pobAmount || 0);
+          return '<div style="background:#ffffff; border:1px solid #e2e8f0; border-radius:12px; padding:10px 12px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">' +
+            '<div><div style="font-size:13px; font-weight:800; color:#0f172a;"><span style="color:#0284c7;">#' + (idx + 1) + '</span> ' + item.doctor + '</div>' +
+            '<div style="font-size:10.5px; color:#64748b; margin-top:2px;"><i class="fa-solid fa-location-dot" style="font-size:9.5px; color:#0284c7;"></i> ' + (item.area || 'Field Clinic') +
+            (targetMR === "ALL" ? ' | By: <b style="color:#0f172a;">' + item.mrName + '</b>' : '') + '</div>' +
+            '<div style="font-size:10px; color:#94a3b8; margin-top:2px;"><i class="fa-regular fa-clock"></i> ' + (item.callTime || 'N/A') + ' | ' + item.dateStr + '</div></div>' +
+            '<div style="text-align:right;"><div style="font-size:14px; font-weight:800; color:' + themeColor + ';">₹' + amount.toLocaleString('en-IN') + '</div>' +
+            '<span style="font-size:9px; font-weight:800; background:' + themeBg + '; color:' + themeColor + '; padding:2px 6px; border-radius:4px; border:1px solid ' + themeBorder + ';">' + (type === 'cash' ? 'CASH' : 'POB') + '</span></div></div>';
+        }).join('');
+      }
+
+      bodyEl.innerHTML = '<div style="background:#f8fafc; border:1px solid #e2e8f0; padding:10px 12px; border-radius:14px; margin-bottom:12px;">' +
+        '<div style="display:flex; gap:8px; margin-bottom:8px;">' +
+        '<button onclick="switchDrillScope(\'today\')" style="flex:1; padding:7px 0; border-radius:8px; font-size:11px; font-weight:800; border:1px solid ' + (scope === 'today' ? '#0284c7' : '#cbd5e1') + '; background:' + (scope === 'today' ? '#0284c7' : '#ffffff') + '; color:' + (scope === 'today' ? '#ffffff' : '#475569') + '; cursor:pointer;"><i class="fa-regular fa-calendar-day"></i> Day View</button>' +
+        '<button onclick="switchDrillScope(\'month\')" style="flex:1; padding:7px 0; border-radius:8px; font-size:11px; font-weight:800; border:1px solid ' + (scope === 'month' ? '#0284c7' : '#cbd5e1') + '; background:' + (scope === 'month' ? '#0284c7' : '#ffffff') + '; color:' + (scope === 'month' ? '#ffffff' : '#475569') + '; cursor:pointer;"><i class="fa-regular fa-calendar-days"></i> Full Month View</button>' +
+        '</div><div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">' +
+        '<span style="font-size:11px; font-weight:700; color:#475569;">' + (scope === 'today' ? 'Change Date:' : 'Change Month:') + '</span>' +
+        '<input type="' + (scope === 'today' ? 'date' : 'month') + '" value="' + (scope === 'today' ? selectedDate : selectedMonth) + '" onchange="updateDrillDate(this.value)" style="padding:6px 10px; border-radius:8px; border:1.5px solid #0284c7; font-size:12px; font-weight:700; color:#0f172a; outline:none; background:#ffffff;">' +
+        '</div></div>' +
+        '<div style="background:' + themeBg + '; border:1.5px solid ' + themeBorder + '; padding:12px; border-radius:14px; margin-bottom:12px; text-align:center;">' +
+        '<div style="font-size:10px; font-weight:800; color:' + themeColor + '; text-transform:uppercase; letter-spacing:0.5px;">TOTAL ' + typeLabel.toUpperCase() + ' (' + (scope === 'today' ? selectedDate : selectedMonth) + ')</div>' +
+        '<div style="font-size:22px; font-weight:800; color:' + themeColor + '; margin-top:2px;">₹' + totalSum.toLocaleString('en-IN') + '</div>' +
+        '<div style="font-size:10.5px; color:#64748b; margin-top:2px;">' + filtered.length + ' Party Transactions Found</div>' +
+        '</div>' +
+        '<div style="max-height:280px; overflow-y:auto; padding-right:2px;">' + itemsHtml + '</div>';
+    }
+
+    function openCompanyPerformanceModal() {
+      const all = window.cloudTransactions || [];
+      const today = getTodayDateString();
+      const month = getCurrentMonthString();
+
+      const todayCalls = all.filter(x => x.dateStr === today);
+      const monthCalls = all.filter(x => x.dateStr && x.dateStr.startsWith(month));
+
+      const cashToday = todayCalls.reduce((s, x) => s + (parseFloat(x.cashReceived) || 0), 0);
+      const cashMonth = monthCalls.reduce((s, x) => s + (parseFloat(x.cashReceived) || 0), 0);
+      const pobToday = todayCalls.reduce((s, x) => s + (parseFloat(x.pobAmount) || 0), 0);
+      const pobMonth = monthCalls.reduce((s, x) => s + (parseFloat(x.pobAmount) || 0), 0);
+
+      document.getElementById("details-modal-title").innerHTML = '<i class="fa-solid fa-building-circle-check" style="color:#0284c7;"></i> Company Performance Details';
+      document.getElementById("details-modal-body").innerHTML = '<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">' +
+        '<div class="clickable-box" onclick="openPartyWiseDrilldown(\'cash\', \'today\', \'ALL\')" style="background:#fffbeb; padding:12px; border-radius:12px; border:1px solid #fde68a;">' +
+        '<div style="font-size:9.5px; font-weight:800; color:#92400e;">TODAY COLLECTION</div>' +
+        '<div style="font-size:18px; font-weight:800; color:#b45309; margin-top:2px;">₹' + cashToday.toLocaleString('en-IN') + '</div>' +
+        '<div style="font-size:9px; color:#d97706; margin-top:2px;">View list &rarr;</div></div>' +
+        '<div class="clickable-box" onclick="openPartyWiseDrilldown(\'pob\', \'today\', \'ALL\')" style="background:#ecfdf5; padding:12px; border-radius:12px; border:1px solid #a7f3d0;">' +
+        '<div style="font-size:9.5px; font-weight:800; color:#065f46;">TODAY POB</div>' +
+        '<div style="font-size:18px; font-weight:800; color:#059669; margin-top:2px;">₹' + pobToday.toLocaleString('en-IN') + '</div>' +
+        '<div style="font-size:9px; color:#059669; margin-top:2px;">View list &rarr;</div></div></div>' +
+        '<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px;">' +
+        '<div class="clickable-box" onclick="openPartyWiseDrilldown(\'cash\', \'month\', \'ALL\')" style="background:#fef3c7; padding:12px; border-radius:12px; border:1px solid #fcd34d;">' +
+        '<div style="font-size:9.5px; font-weight:800; color:#78350f;">MONTH COLLECTION</div>' +
+        '<div style="font-size:18px; font-weight:800; color:#92400e; margin-top:2px;">₹' + cashMonth.toLocaleString('en-IN') + '</div>' +
+        '<div style="font-size:9px; color:#b45309; margin-top:2px;">View list &rarr;</div></div>' +
+        '<div class="clickable-box" onclick="openPartyWiseDrilldown(\'pob\', \'month\', \'ALL\')" style="background:#dcfce7; padding:12px; border-radius:12px; border:1px solid #86efac;">' +
+        '<div style="font-size:9.5px; font-weight:800; color:#14532d;">MONTH POB</div>' +
+        '<div style="font-size:18px; font-weight:800; color:#166534; margin-top:2px;">₹' + pobMonth.toLocaleString('en-IN') + '</div>' +
+        '<div style="font-size:9px; color:#166534; margin-top:2px;">View list &rarr;</div></div></div>' +
+        '<div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:12px; margin-bottom:12px;">' +
+        '<div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span style="font-size:12px; color:#64748b;">Today Calls Done:</span><b>' + todayCalls.length + ' Doctor Visits</b></div>' +
+        '<div style="display:flex; justify-content:space-between;"><span style="font-size:12px; color:#64748b;">Month Calls Done:</span><b>' + monthCalls.length + ' Doctor Visits</b></div></div>' +
+        '<button class="btn-main btn-blue" onclick="closeDetailsModal()">Close Window</button>';
+      document.getElementById("universal-details-modal").style.display = "flex";
+    }
+
+    function openFYDetailsModal(type) {
+      const all = window.cloudTransactions || [];
+      const fy = getFinancialYearRange();
+      const list = all.filter(x => x.dateStr >= fy.s && x.dateStr <= fy.e && (type === 'cash' ? parseFloat(x.cashReceived || 0) > 0 : parseFloat(x.pobAmount || 0) > 0));
+      const total = list.reduce((s, x) => s + (type === 'cash' ? parseFloat(x.cashReceived || 0) : parseFloat(x.pobAmount || 0)), 0);
+
+      document.getElementById("details-modal-title").innerText = (type === 'cash' ? 'Cash Collection' : 'POB Bookings') + ' (' + fy.label + ')';
+      document.getElementById("details-modal-body").innerHTML = '<div style="background:#f1f5f9; padding:14px; border-radius:14px; margin-bottom:12px; text-align:center;">' +
+        '<div style="font-size:11px; color:#64748b; font-weight:700;">TOTAL FINANCIAL YEAR SUM</div>' +
+        '<div style="font-size:24px; font-weight:800; color:#0f172a; margin-top:4px;">₹' + total.toLocaleString('en-IN') + '</div></div>' +
+        '<div style="max-height:280px; overflow-y:auto;">' +
+        list.map(t => '<div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #f1f5f9; font-size:12px;">' +
+          '<div><b>' + t.doctor + '</b><div style="font-size:10px; color:#64748b;">' + t.dateStr + ' | ' + t.mrName + '</div></div>' +
+          '<b style="color:' + (type === 'cash' ? '#b45309' : '#15803d') + ';">₹' + (type === 'cash' ? t.cashReceived : t.pobAmount).toLocaleString('en-IN') + '</b></div>'
+        ).join('') + '</div>';
+      document.getElementById("universal-details-modal").style.display = "flex";
+    }
+
+    function openDrawerModal(type) {
+      toggleOwnerSideMenu(false);
+      const title = document.getElementById("details-modal-title");
+      const body = document.getElementById("details-modal-body");
+      document.getElementById("universal-details-modal").style.display = "flex";
+
+      if (type === 'add_mr') {
+        title.innerText = "Add New MR & PIN";
+        body.innerHTML = '<input type="text" id="new-mr-name" class="text-input" placeholder="MR Name">' +
+          '<input type="tel" id="new-mr-phone" class="text-input" placeholder="Mobile Number">' +
+          '<button class="btn-main btn-blue" onclick="addNewMR()">Create Account</button>';
+      } else if (type === 'attendance') {
+        title.innerText = "Today MR Attendance";
+        const staff = window.cloudStaff || [];
+        const locs = window.cloudLocations || {};
+        body.innerHTML = staff.map(function(s) {
+          const key = s.name ? s.name.replace(/\s+/g, '_') : '';
+          const l = locs[key];
+          const isPresent = l && l.dutyStatus === 'active';
+          return '<div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #eee;">' +
+            '<div><b>' + s.name + '</b><div style="font-size:11px; color:#64748b;">' + (l && l.lastUpdatedTime ? 'Active: ' + l.lastUpdatedTime : 'No Punch') + '</div></div>' +
+            '<b style="color:' + (isPresent ? '#15803d' : '#b91c1c') + ';">' + (isPresent ? 'PUNCHED-IN' : 'OFFLINE') + '</b></div>';
+        }).join('');
+      } else if (type === 'products') {
+        title.innerText = "Products & Rates Master";
+        const pList = window.cloudProducts || [];
+        body.innerHTML = '<input type="text" id="new-p-name" class="text-input" placeholder="Product Name">' +
+          '<input type="number" id="new-p-rate" class="text-input" placeholder="Standard Rate (₹)">' +
+          '<button class="btn-main btn-green" style="margin-bottom:12px;" onclick="addNewProd()">Add Product</button>' +
+          pList.map(p => '<div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #eee;"><span>' + p.name + '</span><b>₹' + p.standardRate + '</b></div>').join('');
+      }
+    }
+
+    function addNewMR() {
+      const name = document.getElementById("new-mr-name").value.trim();
+      const phone = document.getElementById("new-mr-phone").value.trim();
+      if (!name || !phone) return alert("Fill details!");
+      const id = "mr_" + Date.now();
+      db.ref("staff/" + id).set({ name: name, phone: phone });
+      alert("MR Added to Cloud!");
+      closeDetailsModal();
+    }
+
+    function addNewProd() {
+      const name = document.getElementById("new-p-name").value.trim();
+      const rate = parseFloat(document.getElementById("new-p-rate").value) || 0;
+      if (!name || !rate) return alert("Fill details!");
+      const id = "p_" + Date.now();
+      db.ref("products/" + id).set({ id: id, name: name, standardRate: rate });
+      alert("Product Added to Master Catalog!");
+      closeDetailsModal();
+    }
+
+    function getMergedTransactions(list) {
+      const map = new Map();
+      list.forEach(function(item) {
+        const key = ((item.mrName || '').trim()) + '_' + ((item.doctor || '').trim()) + '_' + ((item.dateStr || '').trim()) + '_' + ((item.callTime || '').trim());
+        if (!map.has(key)) {
+          map.set(key, Object.assign({}, item));
+        } else {
+          const existing = map.get(key);
+          existing.pobAmount = (parseFloat(existing.pobAmount) || 0) + (parseFloat(item.pobAmount) || 0);
+          existing.cashReceived = (parseFloat(existing.cashReceived) || 0) + (parseFloat(item.cashReceived) || 0);
+          if (!existing.lat && item.lat) existing.lat = item.lat;
+          if (!existing.lng && item.lng) existing.lng = item.lng;
+          if (!existing.area && item.area) existing.area = item.area;
+          if (item.verifiedStatus) existing.verifiedStatus = item.verifiedStatus;
+          if (item.distanceMeters !== undefined) existing.distanceMeters = item.distanceMeters;
+        }
+      });
+      return Array.from(map.values());
+    }
+
+    function loadOwnerDashboard() {
+      const allRaw = window.cloudTransactions || [];
+      const fy = getFinancialYearRange();
+      const today = getTodayDateString();
+      const month = getCurrentMonthString();
+
+      const fyCash = allRaw.filter(x => x.cashReceived > 0 && x.dateStr >= fy.s && x.dateStr <= fy.e).reduce((s, x) => s + parseFloat(x.cashReceived || 0), 0);
+      const fyPob = allRaw.filter(x => x.pobAmount > 0 && x.dateStr >= fy.s && x.dateStr <= fy.e).reduce((s, x) => s + parseFloat(x.pobAmount || 0), 0);
+      document.getElementById("owner-fy-cash-sum").innerText = "₹" + fyCash.toLocaleString('en-IN');
+      document.getElementById("owner-fy-pob-sum").innerText = "₹" + fyPob.toLocaleString('en-IN');
+      document.getElementById("owner-fy-label").innerText = fy.label + " >";
+
+      document.getElementById("comp-cash-today").innerText = "₹" + allRaw.filter(x => x.dateStr === today).reduce((s, x) => s + (parseFloat(x.cashReceived) || 0), 0).toLocaleString('en-IN');
+      document.getElementById("comp-cash-month").innerText = "₹" + allRaw.filter(x => x.dateStr && x.dateStr.startsWith(month)).reduce((s, x) => s + (parseFloat(x.cashReceived) || 0), 0).toLocaleString('en-IN');
+      document.getElementById("comp-pob-today").innerText = "₹" + allRaw.filter(x => x.dateStr === today).reduce((s, x) => s + (parseFloat(x.pobAmount) || 0), 0).toLocaleString('en-IN');
+      document.getElementById("comp-pob-month").innerText = "₹" + allRaw.filter(x => x.dateStr && x.dateStr.startsWith(month)).reduce((s, x) => s + (parseFloat(x.pobAmount) || 0), 0).toLocaleString('en-IN');
+
+      const mrList = currentOwnerFilterMR === "ALL" ? allRaw : allRaw.filter(x => x.mrName === currentOwnerFilterMR);
+      document.getElementById("active-mr-badge").innerText = currentOwnerFilterMR === "ALL" ? "All Staff" : currentOwnerFilterMR;
+
+      const mrCashToday = mrList.filter(x => x.dateStr === today).reduce((s, x) => s + (parseFloat(x.cashReceived) || 0), 0);
+      const mrPobToday = mrList.filter(x => x.dateStr === today).reduce((s, x) => s + (parseFloat(x.pobAmount) || 0), 0);
+      const mrCashMonth = mrList.filter(x => x.dateStr && x.dateStr.startsWith(month)).reduce((s, x) => s + (parseFloat(x.cashReceived) || 0), 0);
+      const mrPobMonth = mrList.filter(x => x.dateStr && x.dateStr.startsWith(month)).reduce((s, x) => s + (parseFloat(x.pobAmount) || 0), 0);
+
+      document.getElementById("mr-box-cash-today").innerText = "₹" + mrCashToday.toLocaleString('en-IN');
+      document.getElementById("mr-box-pob-today").innerText = "₹" + mrPobToday.toLocaleString('en-IN');
+      document.getElementById("mr-box-cash-month").innerText = "₹" + mrCashMonth.toLocaleString('en-IN');
+      document.getElementById("mr-box-pob-month").innerText = "₹" + mrPobMonth.toLocaleString('en-IN');
+
+      let mergedList = getMergedTransactions(mrList);
+
+      mergedList.sort((a, b) => {
+        const timeA = a.timestamp || (a.dateStr ? new Date(a.dateStr + ' ' + (a.callTime || '00:00')).getTime() : 0);
+        const timeB = b.timestamp || (b.dateStr ? new Date(b.dateStr + ' ' + (b.callTime || '00:00')).getTime() : 0);
+        return timeB - timeA;
+      });
+
+      document.getElementById("owner-filtered-count").innerText = mergedList.length + ' Records';
+      document.getElementById("pathway-mr-tag").innerText = currentOwnerFilterMR === "ALL" ? "All Visits Route" : currentOwnerFilterMR + "'s Pathway";
+      updateMRPathway(mergedList);
+
+      document.getElementById("owner-records-stream").innerHTML = mergedList.map(function(t) {
+        const hasPob = parseFloat(t.pobAmount) > 0;
+        const hasCash = parseFloat(t.cashReceived) > 0;
+
+        const dist = parseFloat(t.distanceMeters);
+        const isWithinFence = !isNaN(dist) && dist <= 100;
+
+        let verifyBadgeHtml = "";
+        if (t.verifiedStatus === 'VERIFIED' || isWithinFence) {
+          verifyBadgeHtml = '<span style="font-size:10.5px; font-weight:800; color:#15803d; background:#dcfce7; padding:3px 7px; border-radius:6px; border:1px solid #86efac;"><i class="fa-solid fa-circle-check"></i> Verified (' + (isNaN(dist) ? 0 : Math.round(dist)) + 'm)</span>';
+        } else if (t.verifiedStatus === 'DEVIATED' || (!isNaN(dist) && dist > 100)) {
+          const distLabel = dist > 1000 ? (dist / 1000).toFixed(1) + ' km' : (isNaN(dist) ? '0' : Math.round(dist)) + 'm';
+          verifyBadgeHtml = '<span style="font-size:10.5px; font-weight:800; color:#b91c1c; background:#fee2e2; padding:3px 7px; border-radius:6px; border:1px solid #fca5a5;"><i class="fa-solid fa-triangle-exclamation"></i> Suspected (' + distLabel + ' away)</span>';
+        }
+
+        return '<div class="owner-call-card-square">' +
+          '<div style="display:flex; justify-content:space-between; align-items:flex-start;">' +
+            '<div>' +
+              '<div style="font-size:15px; font-weight:800; color:#0f172a; text-transform:uppercase; letter-spacing:0.3px;">' + t.doctor + '</div>' +
+              '<div style="font-size:11px; color:#475569; margin-top:2px;"><i class="fa-solid fa-location-dot" style="color:#0284c7;"></i> ' + (t.area || 'Field Clinic') + ' | By: <b style="color:#0f172a;">' + t.mrName + '</b></div>' +
+            '</div>' +
+            '<span style="font-size:11px; font-weight:800; background:#dcfce7; color:#15803d; padding:3px 9px; border-radius:6px; border:1px solid #86efac;"><i class="fa-solid fa-check"></i> ' + (t.callTime || 'Done') + '</span>' +
+          '</div>' +
+          
+          '<div style="margin:10px 0 6px 0; display:flex; gap:8px; flex-wrap:wrap; align-items:center;">' +
+            verifyBadgeHtml +
+            (hasPob ? '<span style="font-size:11.5px; font-weight:800; color:#15803d; background:#dcfce7; padding:4px 9px; border-radius:8px; border:1px solid #86efac;"><i class="fa-solid fa-cart-shopping"></i> POB: ₹' + parseFloat(t.pobAmount).toLocaleString('en-IN') + '</span>' : '') +
+            (hasCash ? '<span style="font-size:11.5px; font-weight:800; color:#b45309; background:#fef3c7; padding:4px 9px; border-radius:8px; border:1px solid #fcd34d;"><i class="fa-solid fa-indian-rupee-sign"></i> Cash: ₹' + parseFloat(t.cashReceived).toLocaleString('en-IN') + '</span>' : '') +
+            ((!hasPob && !hasCash) ? '<span style="font-size:11px; font-weight:700; color:#64748b; background:#f8fafc; padding:3px 8px; border-radius:6px; border:1px solid #e2e8f0;">Regular Detailing Call</span>' : '') +
+          '</div>' +
+
+          '<div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; padding-top:6px; border-top:1px dashed #e2e8f0;">' +
+            '<span style="font-size:10px; color:#94a3b8;"><i class="fa-solid fa-calendar-day"></i> ' + (t.dateStr || '') + '</span>' +
+            ((t.lat && t.lng) ? '<a href="https://www.google.com/maps/search/?api=1&query=' + t.lat + ',' + t.lng + '+(' + encodeURIComponent(t.doctor) + ')" target="_blank" style="font-size:11px; font-weight:700; color:#0284c7; text-decoration:none;"><i class="fa-solid fa-map-location-dot"></i> View on Google Maps</a>' : '<span style="font-size:10px; color:#94a3b8;">No GPS</span>') +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    function setOwnerFilter(mr) { 
+      currentOwnerFilterMR = mr; 
+      renderFilterBar();
+      renderLiveLocations();
+      loadOwnerDashboard(); 
+    }
+
+    // WAKE LOCK TO PREVENT OS SLEEP
+    let wakeLock = null;
+    async function activateWakeLock() {
+      try {
+        if ('wakeLock' in navigator) {
+          wakeLock = await navigator.wakeLock.request('screen');
+          const badge = document.getElementById('wake-status-badge');
+          if (badge) {
+            badge.style.background = '#0284c7';
+            badge.style.color = '#ffffff';
+            badge.innerHTML = '<i class="fa-solid fa-bolt"></i> Awake';
+          }
+        }
+      } catch (err) {}
+    }
+
+    const silentAudio = new Audio("data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA");
+    silentAudio.loop = true;
+    function keepAppAwake() {
+      silentAudio.play().catch(() => {});
+      activateWakeLock();
+    }
+    document.addEventListener('click', keepAppAwake, { once: true });
+
+    setInterval(updateNotifBadge, 60 * 60 * 1000);
+
+    window.addEventListener("DOMContentLoaded", function() {
+      updateNotifBadge();
+      renderFilterBar();
+      renderLiveLocations();
+      listenToCloudData();
+      activateWakeLock();
+      setTimeout(initPathwayMap, 400);
+    });
+  </script>
+</body>
+</html>
