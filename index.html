@@ -413,7 +413,7 @@
     window.cloudBreadcrumbs = {};
     window.cloudProducts = [];
 
-    // 48-HOUR PERSISTENT NOTIFICATION ENGINE
+    // --- 48-HOUR PERSISTENT IN-APP NOTIFICATION ENGINE ---
     const TWO_DAYS_MS = 2 * 24 * 60 * 60 * 1000;
 
     function getCleanStoredNotifications() {
@@ -421,7 +421,7 @@
         const raw = localStorage.getItem("valchem_owner_notifications");
         let list = raw ? JSON.parse(raw) : [];
         const now = Date.now();
-        list = list.filter(item => (now - (item.createdAt || 0)) <= TWO_DAYS_MS);
+        list = list.filter(item => (now - (item.timestamp || item.createdAt || 0)) <= TWO_DAYS_MS);
         localStorage.setItem("valchem_owner_notifications", JSON.stringify(list));
         return list;
       } catch (e) {
@@ -430,26 +430,40 @@
     }
 
     function saveNotificationToStore(notifItem) {
-      notifItem.createdAt = Date.now();
+      if (!notifItem.timestamp) notifItem.timestamp = Date.now();
       let list = getCleanStoredNotifications();
-      list.unshift(notifItem);
-      if (list.length > 200) list = list.slice(0, 200);
-      localStorage.setItem("valchem_owner_notifications", JSON.stringify(list));
+      
+      // Duplicate entry check
+      const exists = list.some(x => (x.id && x.id === notifItem.id) || (x.timestamp === notifItem.timestamp && x.title === notifItem.title));
+      if (!exists) {
+        list.unshift(notifItem);
+        if (list.length > 250) list = list.slice(0, 250);
+        localStorage.setItem("valchem_owner_notifications", JSON.stringify(list));
+      }
       updateNotifBadge();
     }
 
     function updateNotifBadge() {
       const badge = document.getElementById('notif-count-badge');
       const list = getCleanStoredNotifications();
-      if (list.length > 0) {
-        badge.style.display = 'flex';
-        badge.innerText = list.length > 99 ? '99+' : list.length;
-      } else {
-        badge.style.display = 'none';
+      if (badge) {
+        if (list.length > 0) {
+          badge.style.display = 'flex';
+          badge.innerText = list.length > 99 ? '99+' : list.length;
+        } else {
+          badge.style.display = 'none';
+        }
       }
     }
 
-    function showFlashBanner(title, msg, type) {
+    function playNotificationSound() {
+      try {
+        const audio = new Audio("https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3");
+        audio.play().catch(() => {});
+      } catch (e) {}
+    }
+
+    function showFlashBanner(title, msg, type, badgeColor = 'blue') {
       const banner = document.getElementById('activity-flash-banner');
       const titleEl = document.getElementById('flash-banner-title');
       const msgEl = document.getElementById('flash-banner-msg');
@@ -458,14 +472,7 @@
       titleEl.innerText = title;
       msgEl.innerText = msg;
 
-      saveNotificationToStore({
-        title: title,
-        msg: msg,
-        type: type,
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        date: getTodayDateString()
-      });
-
+      // Icon & Border color based on type
       if (type === 'pob') {
         banner.style.borderLeftColor = '#10b981';
         iconEl.innerHTML = '<i class="fa-solid fa-cart-shopping" style="color:#10b981;"></i>';
@@ -478,17 +485,21 @@
       } else if (type === 'punch_out') {
         banner.style.borderLeftColor = '#ef4444';
         iconEl.innerHTML = '<i class="fa-solid fa-right-from-bracket" style="color:#ef4444;"></i>';
-      } else if (type === 'stop_yellow') {
+      } else if (type === 'stoppage_yellow' || badgeColor === 'yellow') {
         banner.style.borderLeftColor = '#f59e0b';
         iconEl.innerHTML = '<i class="fa-solid fa-triangle-exclamation" style="color:#f59e0b;"></i>';
-      } else if (type === 'stop_red') {
+      } else if (type === 'stoppage_red' || badgeColor === 'red') {
         banner.style.borderLeftColor = '#ef4444';
         iconEl.innerHTML = '<i class="fa-solid fa-circle-exclamation" style="color:#ef4444;"></i>';
+      } else if (type === 'doctor_add' || type === 'doc_location_reset') {
+        banner.style.borderLeftColor = '#8b5cf6';
+        iconEl.innerHTML = '<i class="fa-solid fa-user-doctor" style="color:#8b5cf6;"></i>';
       } else {
         banner.style.borderLeftColor = '#0284c7';
-        iconEl.innerHTML = '<i class="fa-solid fa-user-doctor" style="color:#0284c7;"></i>';
+        iconEl.innerHTML = '<i class="fa-solid fa-bell" style="color:#0284c7;"></i>';
       }
 
+      playNotificationSound();
       banner.classList.add('show');
       if (flashTimer) clearTimeout(flashTimer);
       flashTimer = setTimeout(hideFlashBanner, 8000);
@@ -497,6 +508,35 @@
     function hideFlashBanner() {
       const banner = document.getElementById('activity-flash-banner');
       if (banner) banner.classList.remove('show');
+    }
+
+    // --- FIREBASE DIRECT NOTIFICATION SYNC (APP KHULNE PAR BHI) ---
+    function listenToFirebaseNotifications() {
+      const notifRef = db.ref("notifications");
+      const cutOffTime = Date.now() - TWO_DAYS_MS;
+
+      // 1. App start hote hi pichhle 48 ghante ke notifications Firebase se sync karein
+      notifRef.orderByChild("timestamp").startAt(cutOffTime).once("value", snapshot => {
+        const data = snapshot.val();
+        if (data) {
+          const list = Object.values(data).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+          localStorage.setItem("valchem_owner_notifications", JSON.stringify(list));
+          updateNotifBadge();
+        }
+      });
+
+      // 2. Real-time child_added listener (Agar Owner app active hai)
+      let isInitialLoad = true;
+      notifRef.limitToLast(1).on("child_added", snapshot => {
+        if (isInitialLoad) return;
+        const n = snapshot.val();
+        if (!n) return;
+
+        saveNotificationToStore(n);
+        showFlashBanner(n.title, n.message || n.msg, n.type, n.badgeColor);
+      });
+
+      setTimeout(() => { isInitialLoad = false; }, 2500);
     }
 
     function openNotificationsModal() {
@@ -512,21 +552,23 @@
       } else {
         body.innerHTML = '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding-bottom:6px; border-bottom:1px solid #f1f5f9;"><span style="font-size:11px; color:#64748b; font-weight:800;">SAVED NOTIFICATIONS (48H AUTO-EXPIRE)</span><button onclick="clearAllNotifications()" style="background:#fee2e2; border:none; color:#dc2626; font-size:10px; font-weight:800; padding:4px 9px; border-radius:6px; cursor:pointer;">Clear All</button></div><div style="max-height:380px; overflow-y:auto;">' +
           list.map(function(n) {
-            let iconClass = 'fa-user-doctor';
+            let iconClass = 'fa-bell';
             let iconColor = '#0284c7';
 
             if (n.type === 'pob') { iconClass = 'fa-cart-shopping'; iconColor = '#10b981'; }
             else if (n.type === 'cash') { iconClass = 'fa-indian-rupee-sign'; iconColor = '#f59e0b'; }
             else if (n.type === 'punch_in') { iconClass = 'fa-right-to-bracket'; iconColor = '#10b981'; }
             else if (n.type === 'punch_out') { iconClass = 'fa-right-from-bracket'; iconColor = '#ef4444'; }
-            else if (n.type === 'stop_yellow') { iconClass = 'fa-triangle-exclamation'; iconColor = '#f59e0b'; }
-            else if (n.type === 'stop_red') { iconClass = 'fa-circle-exclamation'; iconColor = '#ef4444'; }
+            else if (n.type === 'stoppage_yellow' || n.badgeColor === 'yellow') { iconClass = 'fa-triangle-exclamation'; iconColor = '#f59e0b'; }
+            else if (n.type === 'stoppage_red' || n.badgeColor === 'red') { iconClass = 'fa-circle-exclamation'; iconColor = '#ef4444'; }
+            else if (n.type === 'doctor_add' || n.type === 'doc_location_reset') { iconClass = 'fa-user-doctor'; iconColor = '#8b5cf6'; }
+            else if (n.type === 'call') { iconClass = 'fa-clipboard-check'; iconColor = '#10b981'; }
 
             return '<div style="display:flex; gap:12px; align-items:flex-start; padding:11px 12px; border-radius:12px; background:#f8fafc; border:1px solid #e2e8f0; margin-bottom:8px;">' +
               '<div style="font-size:16px; margin-top:2px; color:' + iconColor + ';"><i class="fa-solid ' + iconClass + '"></i></div>' +
-              '<div style="flex:1;"><div style="display:flex; justify-content:space-between; align-items:center;"><b style="font-size:12.5px; color:#0f172a;">' + n.title + '</b><span style="font-size:10px; color:#94a3b8;">' + n.time + '</span></div>' +
-              '<div style="font-size:11.5px; color:#475569; margin-top:3px;">' + n.msg + '</div>' +
-              '<div style="font-size:9.5px; color:#94a3b8; margin-top:2px;"><i class="fa-regular fa-calendar"></i> ' + (n.date || '') + '</div></div></div>';
+              '<div style="flex:1;"><div style="display:flex; justify-content:space-between; align-items:center;"><b style="font-size:12.5px; color:#0f172a;">' + n.title + '</b><span style="font-size:10px; color:#94a3b8;">' + (n.timeStr || n.time || '') + '</span></div>' +
+              '<div style="font-size:11.5px; color:#475569; margin-top:3px;">' + (n.message || n.msg || '') + '</div>' +
+              '<div style="font-size:9.5px; color:#94a3b8; margin-top:2px;"><i class="fa-regular fa-calendar"></i> ' + (n.dateStr || n.date || '') + ' | Staff: <b>' + (n.mrName || 'MR') + '</b></div></div></div>';
           }).join('') + '</div>';
       }
       document.getElementById("universal-details-modal").style.display = "flex";
@@ -590,16 +632,14 @@
 
       let points = [];
 
-      // Check if breadcrumbs are present for selected MR
       if (currentOwnerFilterMR !== "ALL") {
         const staffKey = currentOwnerFilterMR.replace(/\s+/g, '_');
         const trailPoints = (window.cloudBreadcrumbs || {})[staffKey] || [];
         if (trailPoints.length > 0) {
-          points = trailPoints.map(p => ({ lat: p.lat, lng: p.lng, label: p.time || 'Route Point', isTrail: true }));
+          points = trailPoints.map(p => ({ lat: p.lat, lng: p.lng, label: p.timeStr || p.time || 'Route Point', isTrail: true }));
         }
       }
 
-      // If no continuous trail points, use visited doctor locations
       if (points.length === 0) {
         const validCalls = (calls || [])
           .filter(c => c.lat && c.lng && !isNaN(parseFloat(c.lat)) && !isNaN(parseFloat(c.lng)))
@@ -657,105 +697,34 @@
       });
 
       // 2. CALLS & TRANSACTIONS LISTENER
-      let initialTxLoad = true;
       db.ref("transactions").on("value", function(snapshot) {
         const val = snapshot.val();
         window.cloudTransactions = val ? Object.values(val) : [];
         loadOwnerDashboard();
       });
 
-      db.ref("transactions").on("child_added", function(snapshot) {
-        if (initialTxLoad) return;
-        const latest = snapshot.val();
-        if (!latest) return;
-
-        const hasPob = parseFloat(latest.pobAmount) > 0;
-        const hasCash = parseFloat(latest.cashReceived) > 0;
-
-        if (hasPob && hasCash) {
-          showFlashBanner('POB & Cash: ' + latest.mrName, 'POB: ₹' + latest.pobAmount + ' | Cash: ₹' + latest.cashReceived + ' at Dr. ' + latest.doctor, 'pob');
-        } else if (hasPob) {
-          showFlashBanner('POB Booked: ' + latest.mrName, '₹' + latest.pobAmount + ' booked at Dr. ' + latest.doctor, 'pob');
-        } else if (hasCash) {
-          showFlashBanner('Cash Received: ' + latest.mrName, '₹' + latest.cashReceived + ' collected from Dr. ' + latest.doctor, 'cash');
-        } else {
-          showFlashBanner('Doctor Visited: ' + latest.mrName, 'Dr. ' + latest.doctor + ' (' + (latest.area || 'Field') + ')', 'call');
-        }
-      });
-      setTimeout(() => { initialTxLoad = false; }, 3000);
-
-      // 3. LIVE GPS & 100M STOPPAGE LISTENER (30 MIN YELLOW / 60 MIN RED)
-      let initialLocLoad = true;
-      let prevStaffState = {};
-
+      // 3. LIVE GPS & MR LOCATIONS
       db.ref("mr_live_locations").on("value", function(snapshot) {
-        const val = snapshot.val() || {};
-        window.cloudLocations = val;
-
-        const now = Date.now();
-
-        Object.keys(val).forEach(function(key) {
-          const cur = val[key];
-          const staffName = cur.mrName || key.replace(/_/g, ' ');
-          const prev = prevStaffState[key];
-
-          // PUNCH IN / OUT DETECTION
-          if (!initialLocLoad && prev) {
-            if (prev.dutyStatus !== cur.dutyStatus) {
-              if (cur.dutyStatus === 'active') {
-                showFlashBanner('Punch-In: ' + staffName, staffName + ' ne duty start ki at ' + (cur.lastUpdatedTime || ''), 'punch_in');
-              } else if (cur.dutyStatus === 'offline') {
-                showFlashBanner('Punch-Out: ' + staffName, staffName + ' ne duty stop/punch-out kiya', 'punch_out');
-              }
-            }
-          }
-
-          // STOPPAGE CALCULATION (100 METERS RADIUS)
-          if (cur.lat && cur.lng) {
-            let stayDurationMinutes = 0;
-            
-            if (cur.stayStartTime) {
-              stayDurationMinutes = Math.floor((now - cur.stayStartTime) / (60 * 1000));
-            } else if (prev && prev.lat && prev.lng) {
-              const dist = calculateDistanceMeters(prev.lat, prev.lng, cur.lat, cur.lng);
-              if (dist <= 100) {
-                stayDurationMinutes = prev.stayMinutes ? prev.stayMinutes + 5 : 5;
-              }
-            }
-
-            cur.stayMinutes = stayDurationMinutes;
-
-            // Trigger Yellow & Red Alerts
-            if (!initialLocLoad) {
-              if (stayDurationMinutes >= 60 && (!prev || prev.stayMinutes < 60)) {
-                showFlashBanner('🚨 Red Alert Stoppage (1 Hr): ' + staffName, staffName + ' pichhle 1 ghante se 100m ke dayre mein ruke hue hain!', 'stop_red');
-              } else if (stayDurationMinutes >= 30 && (!prev || prev.stayMinutes < 30)) {
-                showFlashBanner('⚠️ Stoppage Alert (30m): ' + staffName, staffName + ' pichhle 30 minute se ek hi sthan par hain (Doctor Meeting/Waiting).', 'stop_yellow');
-              }
-            }
-          }
-
-          prevStaffState[key] = Object.assign({}, cur);
-        });
-
-        initialLocLoad = false;
+        window.cloudLocations = snapshot.val() || {};
         renderLiveLocations();
       });
 
       // 4. BREADCRUMB ROUTE HISTORY LISTENER
-      const todayStr = getTodayDateString();
-      db.ref("staff_routes/" + todayStr).on("value", function(snapshot) {
+      db.ref("mr_breadcrumbs").on("value", function(snapshot) {
         window.cloudBreadcrumbs = snapshot.val() || {};
         if (currentOwnerFilterMR !== "ALL") {
           loadOwnerDashboard();
         }
       });
 
-      // 5. PRODUCTS
+      // 5. PRODUCTS MASTER
       db.ref("products").on("value", function(snapshot) {
         const val = snapshot.val();
         window.cloudProducts = val ? Object.values(val) : [];
       });
+
+      // 6. INITIALIZE DIRECT FIREBASE NOTIFICATION ENGINE
+      listenToFirebaseNotifications();
     }
 
     function renderFilterBar() {
@@ -779,7 +748,7 @@
       }
     }
 
-    // RENDER FIELD STAFF WITH STOPPAGE STATUS (30 MIN YELLOW & 1 HR RED)
+    // RENDER FIELD STAFF WITH STOPPAGE STATUS (30 MIN YELLOW & 45 MIN RED)
     function renderLiveLocations() {
       const staff = window.cloudStaff || [];
       const locs = window.cloudLocations || {};
@@ -789,15 +758,12 @@
         const l = locs[key];
         const isSelected = currentOwnerFilterMR === s.name;
         
-        const stayMin = l ? (l.stayMinutes || 0) : 0;
         let stoppageBadgeHtml = '';
 
-        if (stayMin >= 60) {
-          stoppageBadgeHtml = '<span class="badge-red-stop"><i class="fa-solid fa-circle-exclamation"></i> Stoppage: ' + stayMin + 'm (1h+ Alert)</span>';
-        } else if (stayMin >= 30) {
-          stoppageBadgeHtml = '<span class="badge-yellow-stop"><i class="fa-solid fa-triangle-exclamation"></i> Stoppage: ' + stayMin + 'm (Wait)</span>';
-        } else if (l && l.lat) {
-          stoppageBadgeHtml = '<span style="font-size:10px; font-weight:700; color:#10b981; background:#ecfdf5; padding:2px 7px; border-radius:6px; border:1px solid #a7f3d0;"><i class="fa-solid fa-person-walking"></i> Moving / Active</span>';
+        if (l && l.lat) {
+          stoppageBadgeHtml = '<span style="font-size:10px; font-weight:700; color:#10b981; background:#ecfdf5; padding:2px 7px; border-radius:6px; border:1px solid #a7f3d0;"><i class="fa-solid fa-person-walking"></i> Active in Field</span>';
+        } else {
+          stoppageBadgeHtml = '<span style="font-size:10px; font-weight:700; color:#94a3b8; background:#f1f5f9; padding:2px 7px; border-radius:6px; border:1px solid #cbd5e1;">Offline</span>';
         }
 
         return '<div class="clickable-box" onclick="handleStaffClick(\'' + s.name + '\')" style="display:flex; justify-content:space-between; align-items:center; background:' + (isSelected ? '#e0f2fe' : '#ffffff') + '; padding:12px 14px; border-radius:14px; margin-bottom:9px; border:1.5px solid ' + (isSelected ? '#0284c7' : '#e2e8f0') + '; box-shadow:0 2px 6px rgba(0,0,0,0.02);">' +
@@ -806,11 +772,11 @@
               '<span>' + s.name + '</span>' +
               '<i class="fa-solid fa-location-crosshairs" style="font-size:12px; color:#0284c7;"></i>' +
             '</div>' +
-            '<div style="font-size:10.5px; color:#64748b; margin-top:2px;">' + (l ? 'GPS: ' + (l.lastUpdatedTime || 'Active') : 'Offline / In Field') + '</div>' +
+            '<div style="font-size:10.5px; color:#64748b; margin-top:2px;">' + (l ? 'GPS Time: ' + (l.lastUpdatedTime || 'Active') : 'Offline') + '</div>' +
             '<div style="margin-top:5px;">' + stoppageBadgeHtml + '</div>' +
           '</div>' +
           '<div style="display:flex; gap:6px; align-items:center;">' +
-            '<span style="font-size:11.5px; font-weight:700; color:' + (l ? '#0284c7' : '#94a3b8') + '; background:#f8fafc; border:1.5px solid #cbd5e1; padding:6px 11px; border-radius:10px;"><i class="fa-solid fa-location-arrow"></i> Location</span>' +
+            '<span style="font-size:11.5px; font-weight:700; color:' + (l ? '#0284c7' : '#94a3b8') + '; background:#f8fafc; border:1.5px solid #cbd5e1; padding:6px 11px; border-radius:10px;"><i class="fa-solid fa-location-arrow"></i> Map</span>' +
           '</div>' +
         '</div>';
       }).join('');
